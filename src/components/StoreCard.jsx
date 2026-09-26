@@ -2,6 +2,8 @@ function StoreCard({
   store,
   onSelect,
   onDelete,
+  isSelected,
+  onToggleSelect,
 }) {
   return (
     <div
@@ -14,6 +16,25 @@ function StoreCard({
         cursor: 'pointer',
       }}
     >
+        <label
+            onClick={(event) => {
+            event.stopPropagation()
+            }}
+            style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            marginBottom: '10px',
+            cursor: 'pointer',
+            }}
+        >
+            <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={() => onToggleSelect(store.id)}
+            />
+            AI旅行プランに追加
+      </label>
       <h3
         style={{
           margin: '0 0 8px 0',

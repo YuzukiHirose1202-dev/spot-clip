@@ -34,6 +34,13 @@ function App() {
   const [searchResults, setSearchResults] = useState([])
   const [isSearching, setIsSearching] = useState(false)
 
+  // =========================
+  // AI旅行プラン用
+  // =========================
+
+  const [selectedStoreIds, setSelectedStoreIds] = useState([])
+  const [travelPreferences, setTravelPreferences] = useState('')
+  const [travelPlan, setTravelPlan] = useState('')
 
   // =========================
   // 保存したお店
@@ -204,7 +211,68 @@ const handleSearch = async () => {
       )
     }
   }
+  // =========================
+  // AI旅行プラン用
+  // =========================
 
+  const toggleStoreSelection = (storeId) => {
+    setSelectedStoreIds((prev) => {
+      if (prev.includes(storeId)) {
+        return prev.filter((id) => id !== storeId)
+      }
+
+      return [...prev, storeId]
+    })
+  }
+
+  const generateTravelPlan = async () => {
+  if (!travelPreferences.trim()) {
+    alert('旅行の希望を入力してください')
+    return
+  }
+
+  if (selectedStoreIds.length === 0) {
+    alert('旅行に使いたいお店を選択してください')
+    return
+  }
+
+  try {
+    const selectedStores = stores.filter((store) =>
+      selectedStoreIds.includes(store.id)
+    )
+
+    const response = await fetch(
+      'http://localhost:3001/api/travel-plan',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          stores: selectedStores,
+          preferences: travelPreferences,
+        }),
+      }
+    )
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(
+        data.error || 'AI旅行プランの作成に失敗しました'
+      )
+    }
+
+    setTravelPlan(data.plan)
+
+  } catch (error) {
+    console.error(error)
+
+    alert(
+      'AI旅行プランの作成に失敗しました'
+    )
+  }
+}
 
   // =========================
   // お店を削除
@@ -508,44 +576,81 @@ const handleSearch = async () => {
         </section>
 
 
-        {/* 今週末の候補 */}
+        {/* =========================
+            AI旅行プラン
+        ========================= */}
         <section className="weekend-card">
 
           <div className="weekend-header">
 
             <div>
-
               <p className="section-label">
-                WEEKEND PLAN
+                AI TRAVEL PLAN
               </p>
 
               <h2>
-                今週末の候補
+                AIに旅行プランを作ってもらう
               </h2>
-
             </div>
 
             <span className="candidate-count">
-              0件
+              {selectedStoreIds.length}件選択
             </span>
 
           </div>
 
           <p className="weekend-area">
-            📍 まだ計画中の場所はありません
+            MY PLACESから行きたいスポットを選んで、
+            旅行の希望を入力してください。
           </p>
 
-          <div className="plan-members">
+          <textarea
+            value={travelPreferences}
+            onChange={(e) =>
+              setTravelPreferences(e.target.value)
+            }
+            placeholder="例：カフェを中心に、ゆっくり回りたい"
+            rows={4}
+            style={{
+              width: '100%',
+              padding: '12px',
+              boxSizing: 'border-box',
+              borderRadius: '8px',
+              border: '1px solid #ddd',
+              resize: 'vertical',
+              marginBottom: '12px',
+            }}
+          />
 
-            <div className="member-icon">
-              ＋
+          <button
+            onClick={generateTravelPlan}
+            style={{
+              width: '100%',
+              padding: '12px',
+              border: 'none',
+              borderRadius: '8px',
+              background: '#111',
+              color: '#fff',
+              cursor: 'pointer',
+            }}
+          >
+            AIで旅行プランを作る
+          </button>
+
+          {travelPlan && (
+            <div
+              style={{
+                marginTop: '16px',
+                padding: '16px',
+                borderRadius: '8px',
+                background: '#f7f7f7',
+                whiteSpace: 'pre-wrap',
+              }}
+            >
+              <h3>旅行プラン</h3>
+              <p>{travelPlan}</p>
             </div>
-
-            <span>
-              友達と共有
-            </span>
-
-          </div>
+          )}
 
         </section>
 
@@ -656,6 +761,8 @@ const handleSearch = async () => {
                           setCurrentPage('地図')
                         }}
                         onDelete={deleteStore}
+                        isSelected={selectedStoreIds.includes(store.id)}
+                        onToggleSelect={toggleStoreSelection}
                       />
                     ))}
                   </div>
