@@ -303,9 +303,9 @@ const handleSearch = async () => {
       <header className="header">
 
         <div className="logo">
-          <span className="logo-icon">
-            ✦
-          </span>
+        <span className="logo-icon">
+          <img src="/logo.png" alt="SNS PLACE" />
+        </span>
 
           <span>
             SNS PLACE
@@ -332,9 +332,7 @@ const handleSearch = async () => {
             </p>
 
             <h1>
-              週末の計画は
-              <br />
-              どうする？
+              週末の計画はどうする？
             </h1>
 
           </div>
@@ -474,7 +472,7 @@ const handleSearch = async () => {
                   padding: '12px',
                   border: 'none',
                   borderRadius: '8px',
-                  background: '#111',
+                  background: '#e88190',
                   color: '#fff',
                   cursor: 'pointer',
                 }}
@@ -629,8 +627,8 @@ const handleSearch = async () => {
               padding: '12px',
               border: 'none',
               borderRadius: '8px',
-              background: '#111',
-              color: '#fff',
+              background: '#fdc8d0',
+              color: '#3a2121',
               cursor: 'pointer',
             }}
           >
