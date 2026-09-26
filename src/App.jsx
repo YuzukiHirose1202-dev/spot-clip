@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './App.css'
 import MapView from './components/MapView'
 import StoreCard from './components/StoreCard'
@@ -80,29 +80,29 @@ function App() {
 
 
 
-// =========================
-// 店を検索
-// =========================
+  // =========================
+  // 店を検索
+  // =========================
 
-const handleSearch = async () => {
-  if (!searchText.trim()) return
+  const handleSearch = async () => {
+    if (!searchText.trim()) return
 
-  setIsSearching(true)
-  setSearchResults([])
-
-  try {
-    const results = await searchPlaces(searchText)
-
-    setSearchResults(results)
-
-  } catch (error) {
-    console.error(error)
+    setIsSearching(true)
     setSearchResults([])
 
-  } finally {
-    setIsSearching(false)
+    try {
+      const results = await searchPlaces(searchText)
+
+      setSearchResults(results)
+
+    } catch (error) {
+      console.error(error)
+      setSearchResults([])
+
+    } finally {
+      setIsSearching(false)
+    }
   }
-}
 
 
 
@@ -227,53 +227,53 @@ const handleSearch = async () => {
   }
 
   const generateTravelPlan = async () => {
-  if (!travelPreferences.trim()) {
-    alert('旅行の希望を入力してください')
-    return
-  }
-
-  if (selectedStoreIds.length === 0) {
-    alert('旅行に使いたいお店を選択してください')
-    return
-  }
-
-  try {
-    const selectedStores = stores.filter((store) =>
-      selectedStoreIds.includes(store.id)
-    )
-
-    const response = await fetch(
-      'http://localhost:3001/api/travel-plan',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          stores: selectedStores,
-          preferences: travelPreferences,
-        }),
-      }
-    )
-
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(
-        data.error || 'AI旅行プランの作成に失敗しました'
-      )
+    if (!travelPreferences.trim()) {
+      alert('旅行の希望を入力してください')
+      return
     }
 
-    setTravelPlan(data.plan)
+    if (selectedStoreIds.length === 0) {
+      alert('旅行に使いたいお店を選択してください')
+      return
+    }
 
-  } catch (error) {
-    console.error(error)
+    try {
+      const selectedStores = stores.filter((store) =>
+        selectedStoreIds.includes(store.id)
+      )
 
-    alert(
-      'AI旅行プランの作成に失敗しました'
-    )
+      const response = await fetch(
+        'http://localhost:3001/api/travel-plan',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            stores: selectedStores,
+            preferences: travelPreferences,
+          }),
+        }
+      )
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || 'AI旅行プランの作成に失敗しました'
+        )
+      }
+
+      setTravelPlan(data.plan)
+
+    } catch (error) {
+      console.error(error)
+
+      alert(
+        'AI旅行プランの作成に失敗しました'
+      )
+    }
   }
-}
 
   // =========================
   // お店を削除
@@ -327,9 +327,9 @@ const updateStoreStatus = (
       <header className="header">
 
         <div className="logo">
-        <span className="logo-icon">
-          <img src="/logo.png" alt="SNS PLACE" />
-        </span>
+          <span className="logo-icon">
+            <img src="/logo.png" alt="SNS PLACE" />
+          </span>
 
           <span>
             SNS PLACE
@@ -766,6 +766,7 @@ const updateStoreStatus = (
 
               ) : (
 
+<<<<<<< HEAD
                   <div
                     style={{
                       display: 'flex',
@@ -794,6 +795,35 @@ const updateStoreStatus = (
                       />
                     ))}
                   </div>
+=======
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '12px',
+                    marginTop: '16px',
+                  }}
+                >
+                  {filteredStores.map((store) => (
+                    <StoreCard
+                      key={store.id}
+                      store={store}
+                      onSelect={(store) => {
+                        setSelectedPlace({
+                          lat: store.lat,
+                          lon: store.lng,
+                          name: store.name,
+                          display_name: store.name,
+                        })
+                        setCurrentPage('地図')
+                      }}
+                      onDelete={deleteStore}
+                      isSelected={selectedStoreIds.includes(store.id)}
+                      onToggleSelect={toggleStoreSelection}
+                    />
+                  ))}
+                </div>
+>>>>>>> origin/tagawa4
 
               )}
 
@@ -803,14 +833,14 @@ const updateStoreStatus = (
 
           {/* 地図画面 */}
 
-      {currentPage === '地図' && (
-        <MapView
-          selectedPlace={selectedPlace}
-          filteredStores={filteredStores}
-          deleteStore={deleteStore}
-        />
-      )}
- 
+          {currentPage === '地図' && (
+            <MapView
+              selectedPlace={selectedPlace}
+              filteredStores={filteredStores}
+              deleteStore={deleteStore}
+            />
+          )}
+
 
         </section>
 

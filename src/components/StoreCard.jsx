@@ -1,3 +1,5 @@
+import InstagramEmbed from './InstagramEmbed'
+
 function StoreCard({
   store,
   onSelect,
@@ -17,24 +19,24 @@ function StoreCard({
         cursor: 'pointer',
       }}
     >
-        <label
-            onClick={(event) => {
-            event.stopPropagation()
-            }}
-            style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            marginBottom: '10px',
-            cursor: 'pointer',
-            }}
-        >
-            <input
-            type="checkbox"
-            checked={isSelected}
-            onChange={() => onToggleSelect(store.id)}
-            />
-            AI旅行プランに追加
+      <label
+        onClick={(event) => {
+          event.stopPropagation()
+        }}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+          marginBottom: '10px',
+          cursor: 'pointer',
+        }}
+      >
+        <input
+          type="checkbox"
+          checked={isSelected}
+          onChange={() => onToggleSelect(store.id)}
+        />
+        AI旅行プランに追加
       </label>
       <h3>{store.name}</h3>
 
@@ -42,6 +44,7 @@ function StoreCard({
   {store.category}
 </p>
 
+<<<<<<< HEAD
 <p
   style={{
     fontSize: '12px',
@@ -62,6 +65,11 @@ function StoreCard({
 >
   Instagramを見る
 </a>
+=======
+      <InstagramEmbed
+        url={store.url}
+      />
+>>>>>>> origin/tagawa4
 
       <button
         onClick={(event) => {

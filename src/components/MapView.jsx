@@ -9,6 +9,8 @@ import {
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 
+import InstagramEmbed from './InstagramEmbed'
+
 const iconColors = {
   カフェ: 'green',
   グルメ: 'red',
@@ -114,13 +116,9 @@ function MapView({
                 </p>
 
                 {store.url && (
-                  <a
-                    href={store.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Instagramを見る
-                  </a>
+                  <InstagramEmbed
+                    url={store.url}
+                  />
                 )}
 
                 <br />
@@ -145,5 +143,6 @@ function MapView({
     </div>
   )
 }
+
 
 export default MapView
