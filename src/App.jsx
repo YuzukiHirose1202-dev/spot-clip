@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './App.css'
 
 import {
@@ -10,44 +10,218 @@ import {
 } from 'react-leaflet'
 
 import 'leaflet/dist/leaflet.css'
-import L from "leaflet";
+import L from 'leaflet'
+
+
+// ========================================
+// カテゴリーごとのピンの色
+// ========================================
 
 const iconColors = {
-  カフェ: "green",
-  グルメ: "red",
-  "観光・スポット": "blue",
-  スイーツ: "orange",
-  "絶景・ホテル": "violet",
-  "雑貨・ショップ": "gold",
-  すべて: "grey",
-};
+  カフェ: 'green',
+  グルメ: 'red',
+  '観光・スポット': 'blue',
+  スイーツ: 'orange',
+  '絶景・ホテル': 'violet',
+  '雑貨・ショップ': 'gold',
+  すべて: 'grey',
+}
+
+
+// ========================================
+// Leafletのピンを作成
+// ========================================
 
 const createIcon = (color) =>
   new L.Icon({
     iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${color}.png`,
     shadowUrl:
-      "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+      'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
-  });
+  })
+
+
+// ========================================
+// 地図を選択した場所へ移動
+// ========================================
 
 function MapController({ selectedPlace }) {
   const map = useMap()
 
-  if (selectedPlace) {
-    map.setView(
-      [Number(selectedPlace.lat), Number(selectedPlace.lon)],
-      16
-    )
-  }
+  useEffect(() => {
+    if (selectedPlace) {
+      map.setView(
+        [
+          Number(selectedPlace.lat),
+          Number(selectedPlace.lon),
+        ],
+        16
+      )
+    }
+  }, [selectedPlace, map])
 
   return null
 }
+
+
+// ========================================
+// Instagram投稿埋め込み
+// ========================================
+
+function InstagramEmbed({ url }) {
+  const embedRef = useRef(null)
+
+  useEffect(() => {
+    if (!url) return
+
+    // InstagramのURLでなければ何もしない
+    if (!url.includes('instagram.com')) {
+      return
+    }
+
+    const processInstagram = () => {
+      if (
+        window.instgrm &&
+        window.instgrm.Embeds
+      ) {
+        window.instgrm.Embeds.process()
+      }
+    }
+
+    // すでにInstagramの埋め込みJSが読み込まれている場合
+    if (
+      window.instgrm &&
+      window.instgrm.Embeds
+    ) {
+      processInstagram()
+      return
+    }
+
+    // Instagramの埋め込みJSを探す
+    let script = document.querySelector(
+      'script[src="https://www.instagram.com/embed.js"]'
+    )
+
+    // なければ追加
+    if (!script) {
+      script = document.createElement('script')
+
+      script.src =
+        'https://www.instagram.com/embed.js'
+
+      script.async = true
+
+      document.body.appendChild(script)
+    }
+
+    // 読み込み完了後に埋め込みを処理
+    script.addEventListener(
+      'load',
+      processInstagram
+    )
+
+    return () => {
+      script.removeEventListener(
+        'load',
+        processInstagram
+      )
+    }
+  }, [url])
+
+
+  // URLがない場合
+  if (!url) {
+    return null
+  }
+
+
+  // Instagram URLではない場合
+  if (!url.includes('instagram.com')) {
+    return (
+      <p
+        style={{
+          fontSize: '13px',
+          color: '#999',
+          marginTop: '10px',
+        }}
+      >
+        Instagramの投稿URLを登録してください
+      </p>
+    )
+  }
+
+
+  return (
+    <div
+      ref={embedRef}
+      onClick={(event) => {
+        event.stopPropagation()
+      }}
+      style={{
+        width: '100%',
+        overflow: 'hidden',
+        marginTop: '12px',
+      }}
+    >
+      <blockquote
+        className="instagram-media"
+        data-instgrm-permalink={url}
+        data-instgrm-version="14"
+        style={{
+          background: '#FFF',
+          border: 0,
+          borderRadius: '3px',
+          boxShadow:
+            '0 0 1px 0 rgba(0, 0, 0, 0.5), 0 1px 10px 0 rgba(0, 0, 0, 0.15)',
+          margin: '10px auto',
+          maxWidth: '360px',
+          minWidth: '280px',
+          width: '100%',
+        }}
+      >
+
+        <div
+          style={{
+            padding: '16px',
+          }}
+        >
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              textDecoration: 'none',
+              color: '#111',
+            }}
+          >
+            Instagramの投稿を見る
+          </a>
+        </div>
+      </blockquote>
+    </div>
+  )
+}
+
+
+// ========================================
+// App
+// ========================================
+
 function App() {
-  const [activeTab, setActiveTab] = useState('すべて')
-  const [activeCategory, setActiveCategory] = useState('すべて')
-  const [selectedCategory, setSelectedCategory] = useState('カフェ')
-  const [currentPage, setCurrentPage] = useState('ホーム')
+
+  const [activeTab, setActiveTab] =
+    useState('すべて')
+
+  const [activeCategory, setActiveCategory] =
+    useState('すべて')
+
+  const [selectedCategory, setSelectedCategory] =
+    useState('カフェ')
+
+  const [currentPage, setCurrentPage] =
+    useState('ホーム')
+
 
   // =========================
   // お店登録用
@@ -55,19 +229,27 @@ function App() {
 
   const [name, setName] = useState('')
   const [url, setUrl] = useState('')
-  const [showAddForm, setShowAddForm] = useState(false)
+  const [showAddForm, setShowAddForm] =
+    useState(false)
+
 
   // 検索結果から選択した場所
-  const [selectedPlace, setSelectedPlace] = useState(null)
+  const [selectedPlace, setSelectedPlace] =
+    useState(null)
 
 
   // =========================
   // 検索用
   // =========================
 
-  const [searchText, setSearchText] = useState('')
-  const [searchResults, setSearchResults] = useState([])
-  const [isSearching, setIsSearching] = useState(false)
+  const [searchText, setSearchText] =
+    useState('')
+
+  const [searchResults, setSearchResults] =
+    useState([])
+
+  const [isSearching, setIsSearching] =
+    useState(false)
 
 
   // =========================
@@ -75,20 +257,43 @@ function App() {
   // =========================
 
   const [stores, setStores] = useState(() => {
-    const saved = localStorage.getItem('stores')
 
-    return saved
-      ? JSON.parse(saved)
-      : []
+    try {
+
+      const saved =
+        localStorage.getItem('stores')
+
+      if (!saved) {
+        return []
+      }
+
+      const parsed =
+        JSON.parse(saved)
+
+      return Array.isArray(parsed)
+        ? parsed
+        : []
+
+    } catch (error) {
+
+      console.error(
+        '保存データの読み込みに失敗:',
+        error
+      )
+
+      return []
+    }
   })
 
 
   // storesが変更されたらlocalStorageに保存
   useEffect(() => {
+
     localStorage.setItem(
       'stores',
       JSON.stringify(stores)
     )
+
   }, [stores])
 
 
@@ -97,13 +302,42 @@ function App() {
   // =========================
 
   const categories = [
-    { name: 'すべて', icon: '✦' },
-    { name: 'カフェ', icon: '☕' },
-    { name: 'グルメ', icon: '🍝' },
-    { name: '観光・スポット', icon: '🗼' },
-    { name: 'スイーツ', icon: '🍰' },
-    { name: '絶景・ホテル', icon: '🌿' },
-    { name: '雑貨・ショップ', icon: '🛍️' },
+
+    {
+      name: 'すべて',
+      icon: '✦',
+    },
+
+    {
+      name: 'カフェ',
+      icon: '☕',
+    },
+
+    {
+      name: 'グルメ',
+      icon: '🍝',
+    },
+
+    {
+      name: '観光・スポット',
+      icon: '🗼',
+    },
+
+    {
+      name: 'スイーツ',
+      icon: '🍰',
+    },
+
+    {
+      name: '絶景・ホテル',
+      icon: '🌿',
+    },
+
+    {
+      name: '雑貨・ショップ',
+      icon: '🛍️',
+    },
+
   ]
 
 
@@ -112,26 +346,39 @@ function App() {
   // =========================
 
   const handleSearch = async () => {
-    if (!searchText.trim()) return
+
+    if (!searchText.trim()) {
+      return
+    }
+
 
     setIsSearching(true)
     setSearchResults([])
 
+
     try {
+
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(
           searchText
         )}&accept-language=ja&countrycodes=jp&layer=poi&addressdetails=1&limit=20`
       )
 
+
       if (!response.ok) {
-        throw new Error('検索に失敗しました')
+        throw new Error(
+          '検索に失敗しました'
+        )
       }
 
-      const data = await response.json()
+
+      const data =
+        await response.json()
+
 
       // 都道府県を優先
       const prefectures = [
+
         '北海道',
         '青森県',
         '岩手県',
@@ -179,16 +426,22 @@ function App() {
         '宮崎県',
         '鹿児島県',
         '沖縄県',
+
       ]
 
+
       const matchedPrefecture =
-        prefectures.find((prefecture) =>
-          searchText.includes(prefecture)
+        prefectures.find(
+          (prefecture) =>
+            searchText.includes(prefecture)
         )
+
 
       let results = data
 
+
       if (matchedPrefecture) {
+
         results = data
           .filter((result) =>
             result.display_name?.includes(
@@ -203,25 +456,39 @@ function App() {
                 )
             )
           )
+
       }
 
-      setSearchResults(results.slice(0, 10))
+
+      setSearchResults(
+        results.slice(0, 10)
+      )
+
 
     } catch (error) {
+
       console.error(error)
+
       setSearchResults([])
 
     } finally {
+
       setIsSearching(false)
+
     }
   }
 
 
+  // =========================
   // Enterキーでも検索
+  // =========================
+
   const handleKeyDown = (event) => {
+
     if (event.key === 'Enter') {
       handleSearch()
     }
+
   }
 
 
@@ -230,7 +497,9 @@ function App() {
   // =========================
 
   const selectPlace = (result) => {
+
     setSelectedPlace(result)
+
 
     // 店名を自動入力
     setName(
@@ -239,14 +508,18 @@ function App() {
       ''
     )
 
+
     // Instagram URLはあとから入力
     setUrl('')
+
 
     // 登録フォームを表示
     setShowAddForm(true)
 
+
     // 検索結果を閉じる
     setSearchResults([])
+
   }
 
 
@@ -257,12 +530,21 @@ function App() {
   const addStore = async () => {
 
     if (!name.trim()) {
-      alert('店名を入力してください')
+
+      alert(
+        '店名を入力してください'
+      )
+
       return
     }
 
+
     if (!url.trim()) {
-      alert('Instagram URLを入力してください')
+
+      alert(
+        'Instagram URLを入力してください'
+      )
+
       return
     }
 
@@ -276,8 +558,11 @@ function App() {
       // 検索結果から選択した場合
       if (selectedPlace) {
 
-        lat = Number(selectedPlace.lat)
-        lng = Number(selectedPlace.lon)
+        lat =
+          Number(selectedPlace.lat)
+
+        lng =
+          Number(selectedPlace.lon)
 
       } else {
 
@@ -288,30 +573,55 @@ function App() {
           )}&accept-language=ja&countrycodes=jp&layer=poi&limit=1`
         )
 
+
         if (!response.ok) {
-          throw new Error('場所の検索に失敗しました')
+
+          throw new Error(
+            '場所の検索に失敗しました'
+          )
+
         }
 
-        const data = await response.json()
+
+        const data =
+          await response.json()
+
 
         if (data.length === 0) {
-          alert('店舗の場所が見つかりませんでした')
+
+          alert(
+            '店舗の場所が見つかりませんでした'
+          )
+
           return
         }
 
-        lat = Number(data[0].lat)
-        lng = Number(data[0].lon)
+
+        lat =
+          Number(data[0].lat)
+
+        lng =
+          Number(data[0].lon)
+
       }
 
 
       // 新しい店舗データ
       const newStore = {
+
         id: Date.now(),
+
         name: name.trim(),
+
         url: url.trim(),
-        category: selectedCategory,
+
+        category:
+          selectedCategory,
+
         lat,
+
         lng,
+
       }
 
 
@@ -328,6 +638,7 @@ function App() {
       setSelectedPlace(null)
       setShowAddForm(false)
 
+
       // ホームに戻す
       setCurrentPage('ホーム')
 
@@ -338,12 +649,14 @@ function App() {
       alert(
         '店舗の登録に失敗しました'
       )
+
     }
+
   }
 
 
   // =========================
-  // お店を削除
+  // カテゴリーフィルター
   // =========================
 
   const filteredStores =
@@ -351,26 +664,44 @@ function App() {
       ? stores
       : stores.filter(
         (store) =>
-          store.category === activeCategory
+          store.category ===
+          activeCategory
       )
+
+
+  // =========================
+  // お店を削除
+  // =========================
 
   const deleteStore = (id) => {
 
     setStores((prev) =>
       prev.filter(
-        (store) => store.id !== id
+        (store) =>
+          store.id !== id
       )
     )
+
   }
 
 
+  // =========================
+  // 画面
+  // =========================
+
   return (
+
     <div className="app">
 
-      {/* ヘッダー */}
+
+      {/* ========================================
+          ヘッダー
+      ======================================== */}
+
       <header className="header">
 
         <div className="logo">
+
           <span className="logo-icon">
             ✦
           </span>
@@ -378,19 +709,30 @@ function App() {
           <span>
             SNS PLACE
           </span>
+
         </div>
 
-        <button className="profile-button">
+
+        <button
+          className="profile-button"
+        >
           ♡
         </button>
 
       </header>
 
 
-      {/* メイン */}
+      {/* ========================================
+          メイン
+      ======================================== */}
+
       <main className="main-content">
 
-        {/* あいさつ */}
+
+        {/* ========================================
+            あいさつ
+        ======================================== */}
+
         <section className="greeting-section">
 
           <div>
@@ -400,20 +742,31 @@ function App() {
             </p>
 
             <h1>
+
               週末の計画は
+
               <br />
+
               どうする？
+
             </h1>
 
           </div>
-          <button className="notification-button">
+
+
+          <button
+            className="notification-button"
+          >
             🔔
           </button>
 
         </section>
 
 
-        {/* 検索 */}
+        {/* ========================================
+            検索
+        ======================================== */}
+
         <section className="search-section">
 
           <div className="search-box">
@@ -426,87 +779,112 @@ function App() {
               ⌕
             </button>
 
+
             <input
               type="text"
               placeholder="エリアや店名、タグで検索..."
               value={searchText}
               onChange={(event) =>
-                setSearchText(event.target.value)
+                setSearchText(
+                  event.target.value
+                )
               }
               onKeyDown={handleKeyDown}
             />
 
           </div>
 
-          <button className="filter-button">
+
+          <button
+            className="filter-button"
+          >
             ☰
           </button>
 
         </section>
 
 
-        {/* 検索結果 */}
+        {/* ========================================
+            検索結果
+        ======================================== */}
+
         {(isSearching ||
           searchResults.length > 0) && (
 
             <section className="search-results">
 
+
               {isSearching && (
+
                 <p className="search-status">
                   場所を検索しています...
                 </p>
+
               )}
 
 
               {!isSearching &&
-                searchResults.map((result) => (
+                searchResults.map(
+                  (result) => (
 
-                  <button
-                    key={result.place_id}
-                    className="search-result-item"
-                    onClick={() =>
-                      selectPlace(result)
-                    }
-                  >
+                    <button
+                      key={result.place_id}
+                      className="search-result-item"
+                      onClick={() =>
+                        selectPlace(
+                          result
+                        )
+                      }
+                    >
 
-                    <span className="search-result-icon">
-                      📍
-                    </span>
+                      <span className="search-result-icon">
+                        📍
+                      </span>
 
-                    <span className="search-result-text">
 
-                      <strong>
-                        {result.name ||
-                          result.display_name}
-                      </strong>
+                      <span className="search-result-text">
 
-                      <small>
-                        {result.display_name}
-                      </small>
+                        <strong>
 
-                    </span>
+                          {result.name ||
+                            result.display_name}
 
-                  </button>
+                        </strong>
 
-                ))}
+
+                        <small>
+
+                          {result.display_name}
+
+                        </small>
+
+                      </span>
+
+                    </button>
+
+                  )
+                )}
 
 
               {!isSearching &&
                 searchResults.length === 0 && (
 
                   <p className="search-status">
+
                     場所が見つかりませんでした
+
                   </p>
 
                 )}
 
             </section>
+
           )}
 
 
-        {/* =========================
+        {/* ========================================
             登録フォーム
-        ========================= */}
+        ======================================== */}
 
         {showAddForm && (
 
@@ -525,6 +903,7 @@ function App() {
               スポットを登録
             </h2>
 
+
             <p
               style={{
                 fontSize: '13px',
@@ -535,11 +914,15 @@ function App() {
             </p>
 
 
+            {/* 店名 */}
+
             <input
               type="text"
               value={name}
               onChange={(e) =>
-                setName(e.target.value)
+                setName(
+                  e.target.value
+                )
               }
               placeholder="店名"
               style={{
@@ -553,13 +936,17 @@ function App() {
             />
 
 
+            {/* Instagram URL */}
+
             <input
               type="url"
               value={url}
               onChange={(e) =>
-                setUrl(e.target.value)
+                setUrl(
+                  e.target.value
+                )
               }
-              placeholder="Instagram URL"
+              placeholder="Instagram投稿URL"
               style={{
                 width: '100%',
                 padding: '12px',
@@ -569,10 +956,16 @@ function App() {
                 border: '1px solid #ddd',
               }}
             />
+
+
+            {/* カテゴリー */}
+
             <select
               value={selectedCategory}
               onChange={(e) =>
-                setSelectedCategory(e.target.value)
+                setSelectedCategory(
+                  e.target.value
+                )
               }
               style={{
                 width: '100%',
@@ -583,6 +976,7 @@ function App() {
                 border: '1px solid #ddd',
               }}
             >
+
               <option value="カフェ">
                 ☕ カフェ
               </option>
@@ -606,8 +1000,11 @@ function App() {
               <option value="雑貨・ショップ">
                 🛍️ 雑貨・ショップ
               </option>
+
             </select>
 
+
+            {/* ボタン */}
 
             <div
               style={{
@@ -634,10 +1031,12 @@ function App() {
 
               <button
                 onClick={() => {
+
                   setShowAddForm(false)
                   setSelectedPlace(null)
                   setName('')
                   setUrl('')
+
                 }}
                 style={{
                   flex: 1,
@@ -654,78 +1053,96 @@ function App() {
             </div>
 
           </div>
+
         )}
 
 
-        {/* タブ */}
+        {/* ========================================
+            タブ
+        ======================================== */}
+
         <div className="tab-container">
 
-          {['すべて', '行きたい', '行った'].map(
-            (tab) => (
+          {[
+            'すべて',
+            '行きたい',
+            '行った',
+          ].map((tab) => (
 
-              <button
-                key={tab}
-                className={`tab-button ${activeTab === tab
-                  ? 'active'
-                  : ''
-                  }`}
-                onClick={() =>
-                  setActiveTab(tab)
-                }
-              >
+            <button
+              key={tab}
+              className={`tab-button ${activeTab === tab
+                ? 'active'
+                : ''
+                }`}
+              onClick={() =>
+                setActiveTab(tab)
+              }
+            >
 
-                {tab}
+              {tab}
 
-                <span className="tab-count">
-                  {tab === 'すべて'
-                    ? stores.length
-                    : 0}
-                </span>
 
-              </button>
+              <span className="tab-count">
 
-            )
-          )}
+                {tab === 'すべて'
+                  ? stores.length
+                  : 0}
+
+              </span>
+
+            </button>
+
+          ))}
 
         </div>
 
 
-        {/* カテゴリー */}
+        {/* ========================================
+            カテゴリー
+        ======================================== */}
+
         <section className="category-section">
 
           <div className="category-scroll">
 
-            {categories.map((category) => (
+            {categories.map(
+              (category) => (
 
-              <button
-                key={category.name}
-                className={`category-chip ${activeCategory === category.name
-                  ? 'active'
-                  : ''
-                  }`}
-                onClick={() =>
-                  setActiveCategory(
+                <button
+                  key={category.name}
+                  className={`category-chip ${activeCategory ===
                     category.name
-                  )
-                }
-              >
+                    ? 'active'
+                    : ''
+                    }`}
+                  onClick={() =>
+                    setActiveCategory(
+                      category.name
+                    )
+                  }
+                >
 
-                <span>
-                  {category.icon}
-                </span>
+                  <span>
+                    {category.icon}
+                  </span>
 
-                {category.name}
+                  {category.name}
 
-              </button>
+                </button>
 
-            ))}
+              )
+            )}
 
           </div>
 
         </section>
 
 
-        {/* 今週末の候補 */}
+        {/* ========================================
+            今週末の候補
+        ======================================== */}
+
         <section className="weekend-card">
 
           <div className="weekend-header">
@@ -742,15 +1159,18 @@ function App() {
 
             </div>
 
+
             <span className="candidate-count">
               0件
             </span>
 
           </div>
 
+
           <p className="weekend-area">
             📍 まだ計画中の場所はありません
           </p>
+
 
           <div className="plan-members">
 
@@ -767,7 +1187,10 @@ function App() {
         </section>
 
 
-        {/* 保存したスポット */}
+        {/* ========================================
+            保存したスポット
+        ======================================== */}
+
         <section className="places-section">
 
           <div className="places-header">
@@ -790,6 +1213,7 @@ function App() {
 
 
             {/* 表示切り替え */}
+
             <div className="view-buttons">
 
               <button
@@ -799,7 +1223,9 @@ function App() {
                     : 'view-button'
                 }
                 onClick={() =>
-                  setCurrentPage('ホーム')
+                  setCurrentPage(
+                    'ホーム'
+                  )
                 }
               >
                 ▦
@@ -813,7 +1239,9 @@ function App() {
                     : 'view-button'
                 }
                 onClick={() =>
-                  setCurrentPage('地図')
+                  setCurrentPage(
+                    '地図'
+                  )
                 }
               >
                 ⌖
@@ -822,13 +1250,16 @@ function App() {
             </div>
 
           </div>
-          {/* =========================
+
+
+          {/* ========================================
               ホーム画面
-          ========================= */}
+          ======================================== */}
 
           {currentPage === 'ホーム' && (
 
             <>
+
               {filteredStores.length === 0 ? (
 
                 <div className="empty-state">
@@ -860,76 +1291,102 @@ function App() {
                   }}
                 >
 
-                  {filteredStores.map((store) => (
+                  {filteredStores.map(
+                    (store) => (
 
-                    <div
-                      key={store.id}
-                      onClick={() => {
-                        setSelectedPlace({
-                          lat: store.lat,
-                          lon: store.lng,
-                          name: store.name,
-                          display_name: store.name,
-                        })
-                        setCurrentPage('地図')
-                      }}
-                      style={{
-                        padding: '16px',
-                        borderRadius: '12px',
-                        background: '#fff',
-                        border: '1px solid #eee',
-                        cursor: 'pointer',
-                      }}
-                    >
+                      <div
+                        key={store.id}
+                        onClick={() => {
 
-                      <h3
-                        style={{
-                          margin:
-                            '0 0 8px 0',
-                        }}
-                      >
-                        {store.name}
-                      </h3>
-                      <p
-                        style={{
-                          color: '#666',
-                          marginBottom: '8px',
-                        }}
-                      >
-                        {store.category}
-                      </p>
+                          setSelectedPlace({
 
+                            lat: store.lat,
 
-                      <a
-                        href={store.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Instagramを見る
-                      </a>
+                            lon: store.lng,
 
+                            name: store.name,
 
-                      <button
-                        onClick={() =>
-                          deleteStore(
-                            store.id
+                            display_name:
+                              store.name,
+
+                          })
+
+                          setCurrentPage(
+                            '地図'
                           )
-                        }
+
+                        }}
                         style={{
-                          display: 'block',
-                          marginTop: '10px',
-                          border: 'none',
-                          background: 'none',
-                          color: '#999',
+                          padding: '16px',
+                          borderRadius: '12px',
+                          background: '#fff',
+                          border: '1px solid #eee',
                           cursor: 'pointer',
                         }}
                       >
-                        削除
-                      </button>
 
-                    </div>
+                        {/* 店名 */}
 
-                  ))}
+                        <h3
+                          style={{
+                            margin:
+                              '0 0 8px 0',
+                          }}
+                        >
+                          {store.name}
+                        </h3>
+
+
+                        {/* カテゴリー */}
+
+                        <p
+                          style={{
+                            color: '#666',
+                            marginBottom:
+                              '8px',
+                          }}
+                        >
+                          {store.category}
+                        </p>
+
+
+                        {/* =================================
+                            Instagram投稿
+                        ================================= */}
+
+                        <InstagramEmbed
+                          url={store.url}
+                        />
+
+
+                        {/* 削除 */}
+
+                        <button
+                          onClick={(event) => {
+
+                            event.stopPropagation()
+
+                            deleteStore(
+                              store.id
+                            )
+
+                          }}
+                          style={{
+                            display: 'block',
+                            marginTop: '10px',
+                            border: 'none',
+                            background: 'none',
+                            color: '#999',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          削除
+                        </button>
+
+                      </div>
+
+                    )
+                  )}
 
                 </div>
 
@@ -940,9 +1397,9 @@ function App() {
           )}
 
 
-          {/* =========================
+          {/* ========================================
               地図画面
-          ========================= */}
+          ======================================== */}
 
           {currentPage === '地図' && (
 
@@ -951,6 +1408,7 @@ function App() {
               <div className="map-placeholder-icon">
                 📍
               </div>
+
 
               <h3>
                 地図
@@ -975,82 +1433,112 @@ function App() {
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
 
-                <MapController selectedPlace={selectedPlace} />
+
+                <MapController
+                  selectedPlace={
+                    selectedPlace
+                  }
+                />
 
 
-                {/* 登録したお店をピン表示 */}
+                {/* =================================
+                    選択した場所のピン
+                ================================= */}
 
                 {selectedPlace && (
+
                   <Marker
                     position={[
-                      Number(selectedPlace.lat),
-                      Number(selectedPlace.lon),
+                      Number(
+                        selectedPlace.lat
+                      ),
+                      Number(
+                        selectedPlace.lon
+                      ),
                     ]}
                   >
+
                     <Popup>
+
                       {selectedPlace.name ||
                         selectedPlace.display_name}
+
                     </Popup>
+
                   </Marker>
+
                 )}
 
-                {filteredStores.map((store) => (
 
-                  <Marker
-                    key={store.id}
-                    position={[
-                      store.lat,
-                      store.lng,
-                    ]}
-                    icon={createIcon(
-                      iconColors[store.category] || "blue"
-                    )}
-                  >
+                {/* =================================
+                    登録したお店
+                ================================= */}
 
-                    <Popup>
+                {filteredStores.map(
+                  (store) => (
 
-                      <div>
+                    <Marker
+                      key={store.id}
+                      position={[
+                        store.lat,
+                        store.lng,
+                      ]}
+                      icon={createIcon(
+                        iconColors[
+                        store.category
+                        ] || 'blue'
+                      )}
+                    >
 
-                        <h3>
-                          {store.name}
-                        </h3>
-                        <p>
-                          {store.category}
-                        </p>
-                        {store.url && (
+                      <Popup>
 
-                          <a
-                            href={store.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <div>
+
+                          <h3>
+                            {store.name}
+                          </h3>
+
+
+                          <p>
+                            {store.category}
+                          </p>
+
+
+                          {store.url && (
+
+                            <a
+                              href={store.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Instagramを見る
+                            </a>
+
+                          )}
+
+
+                          <br />
+                          <br />
+
+
+                          <button
+                            onClick={() =>
+                              deleteStore(
+                                store.id
+                              )
+                            }
                           >
-                            Instagramを見る
-                          </a>
+                            削除
+                          </button>
 
-                        )}
+                        </div>
 
+                      </Popup>
 
-                        <br />
-                        <br />
+                    </Marker>
 
-
-                        <button
-                          onClick={() =>
-                            deleteStore(
-                              store.id
-                            )
-                          }
-                        >
-                          削除
-                        </button>
-
-                      </div>
-
-                    </Popup>
-
-                  </Marker>
-
-                ))}
+                  )
+                )}
 
               </MapContainer>
 
@@ -1063,11 +1551,14 @@ function App() {
       </main>
 
 
-      {/* =========================
+      {/* ========================================
           下部ナビゲーション
-      ========================= */}
+      ======================================== */}
 
       <nav className="bottom-nav">
+
+
+        {/* ホーム */}
 
         <button
           className={
@@ -1076,15 +1567,24 @@ function App() {
               : 'nav-item'
           }
           onClick={() =>
-            setCurrentPage('ホーム')
+            setCurrentPage(
+              'ホーム'
+            )
           }
         >
-          <span>⌂</span>
+
+          <span>
+            ⌂
+          </span>
+
           <small>
             ホーム
           </small>
+
         </button>
 
+
+        {/* 地図 */}
 
         <button
           className={
@@ -1093,13 +1593,20 @@ function App() {
               : 'nav-item'
           }
           onClick={() =>
-            setCurrentPage('地図')
+            setCurrentPage(
+              '地図'
+            )
           }
         >
-          <span>⌖</span>
+
+          <span>
+            ⌖
+          </span>
+
           <small>
             地図
           </small>
+
         </button>
 
 
@@ -1108,15 +1615,19 @@ function App() {
         <button
           className="add-button"
           onClick={() => {
+
             setName('')
             setUrl('')
             setSelectedPlace(null)
             setShowAddForm(true)
+
           }}
         >
           ＋
         </button>
 
+
+        {/* 共有 */}
 
         <button className="nav-item">
 
@@ -1130,6 +1641,8 @@ function App() {
 
         </button>
 
+
+        {/* マイページ */}
 
         <button className="nav-item">
 
@@ -1148,5 +1661,6 @@ function App() {
     </div>
   )
 }
+
 
 export default App
