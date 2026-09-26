@@ -1,48 +1,13 @@
 import { useState, useEffect } from 'react'
 import './App.css'
-
+import MapView from './components/MapView'
+import StoreCard from './components/StoreCard'
+import SearchBox from './components/SearchBox'
 import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  useMap,
-} from 'react-leaflet'
+  searchPlaces,
+  findPlace,
+} from './services/nominatim'
 
-import 'leaflet/dist/leaflet.css'
-import L from "leaflet";
-
-const iconColors = {
-  カフェ: "green",
-  グルメ: "red",
-  "観光・スポット": "blue",
-  スイーツ: "orange",
-  "絶景・ホテル": "violet",
-  "雑貨・ショップ": "gold",
-  すべて: "grey",
-};
-
-const createIcon = (color) =>
-  new L.Icon({
-    iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${color}.png`,
-    shadowUrl:
-      "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-  });
-
-function MapController({ selectedPlace }) {
-  const map = useMap()
-
-  if (selectedPlace) {
-    map.setView(
-      [Number(selectedPlace.lat), Number(selectedPlace.lon)],
-      16
-    )
-  }
-
-  return null
-}
 function App() {
   const [activeTab, setActiveTab] = useState('すべて')
   const [activeCategory, setActiveCategory] = useState('すべて')
@@ -107,122 +72,31 @@ function App() {
   ]
 
 
-  // =========================
-  // 店を検索
-  // =========================
 
-  const handleSearch = async () => {
-    if (!searchText.trim()) return
+// =========================
+// 店を検索
+// =========================
 
-    setIsSearching(true)
+const handleSearch = async () => {
+  if (!searchText.trim()) return
+
+  setIsSearching(true)
+  setSearchResults([])
+
+  try {
+    const results = await searchPlaces(searchText)
+
+    setSearchResults(results)
+
+  } catch (error) {
+    console.error(error)
     setSearchResults([])
 
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(
-          searchText
-        )}&accept-language=ja&countrycodes=jp&layer=poi&addressdetails=1&limit=20`
-      )
-
-      if (!response.ok) {
-        throw new Error('検索に失敗しました')
-      }
-
-      const data = await response.json()
-
-      // 都道府県を優先
-      const prefectures = [
-        '北海道',
-        '青森県',
-        '岩手県',
-        '宮城県',
-        '秋田県',
-        '山形県',
-        '福島県',
-        '茨城県',
-        '栃木県',
-        '群馬県',
-        '埼玉県',
-        '千葉県',
-        '東京都',
-        '神奈川県',
-        '新潟県',
-        '富山県',
-        '石川県',
-        '福井県',
-        '山梨県',
-        '長野県',
-        '岐阜県',
-        '静岡県',
-        '愛知県',
-        '三重県',
-        '滋賀県',
-        '京都府',
-        '大阪府',
-        '兵庫県',
-        '奈良県',
-        '和歌山県',
-        '鳥取県',
-        '島根県',
-        '岡山県',
-        '広島県',
-        '山口県',
-        '徳島県',
-        '香川県',
-        '愛媛県',
-        '高知県',
-        '福岡県',
-        '佐賀県',
-        '長崎県',
-        '熊本県',
-        '大分県',
-        '宮崎県',
-        '鹿児島県',
-        '沖縄県',
-      ]
-
-      const matchedPrefecture =
-        prefectures.find((prefecture) =>
-          searchText.includes(prefecture)
-        )
-
-      let results = data
-
-      if (matchedPrefecture) {
-        results = data
-          .filter((result) =>
-            result.display_name?.includes(
-              matchedPrefecture
-            )
-          )
-          .concat(
-            data.filter(
-              (result) =>
-                !result.display_name?.includes(
-                  matchedPrefecture
-                )
-            )
-          )
-      }
-
-      setSearchResults(results.slice(0, 10))
-
-    } catch (error) {
-      console.error(error)
-      setSearchResults([])
-
-    } finally {
-      setIsSearching(false)
-    }
+  } finally {
+    setIsSearching(false)
   }
+}
 
-
-  // Enterキーでも検索
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      handleSearch()
-    }
-  }
 
 
   // =========================
@@ -282,25 +156,15 @@ function App() {
       } else {
 
         // 検索結果を使わず直接入力した場合
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(
-            name
-          )}&accept-language=ja&countrycodes=jp&layer=poi&limit=1`
-        )
+        const place = await findPlace(name)
 
-        if (!response.ok) {
-          throw new Error('場所の検索に失敗しました')
-        }
-
-        const data = await response.json()
-
-        if (data.length === 0) {
+        if (!place) {
           alert('店舗の場所が見つかりませんでした')
           return
         }
 
-        lat = Number(data[0].lat)
-        lng = Number(data[0].lon)
+        lat = Number(place.lat)
+        lng = Number(place.lon)
       }
 
 
@@ -412,96 +276,15 @@ function App() {
 
         </section>
 
-
         {/* 検索 */}
-        <section className="search-section">
-
-          <div className="search-box">
-
-            <button
-              className="search-icon"
-              onClick={handleSearch}
-              aria-label="検索"
-            >
-              ⌕
-            </button>
-
-            <input
-              type="text"
-              placeholder="エリアや店名、タグで検索..."
-              value={searchText}
-              onChange={(event) =>
-                setSearchText(event.target.value)
-              }
-              onKeyDown={handleKeyDown}
-            />
-
-          </div>
-
-          <button className="filter-button">
-            ☰
-          </button>
-
-        </section>
-
-
-        {/* 検索結果 */}
-        {(isSearching ||
-          searchResults.length > 0) && (
-
-            <section className="search-results">
-
-              {isSearching && (
-                <p className="search-status">
-                  場所を検索しています...
-                </p>
-              )}
-
-
-              {!isSearching &&
-                searchResults.map((result) => (
-
-                  <button
-                    key={result.place_id}
-                    className="search-result-item"
-                    onClick={() =>
-                      selectPlace(result)
-                    }
-                  >
-
-                    <span className="search-result-icon">
-                      📍
-                    </span>
-
-                    <span className="search-result-text">
-
-                      <strong>
-                        {result.name ||
-                          result.display_name}
-                      </strong>
-
-                      <small>
-                        {result.display_name}
-                      </small>
-
-                    </span>
-
-                  </button>
-
-                ))}
-
-
-              {!isSearching &&
-                searchResults.length === 0 && (
-
-                  <p className="search-status">
-                    場所が見つかりませんでした
-                  </p>
-
-                )}
-
-            </section>
-          )}
+        <SearchBox
+          searchText={searchText}
+          setSearchText={setSearchText}
+          isSearching={isSearching}
+          searchResults={searchResults}
+          onSearch={handleSearch}
+          onSelectPlace={selectPlace}
+        />
 
 
         {/* =========================
@@ -851,87 +634,31 @@ function App() {
 
               ) : (
 
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '12px',
-                    marginTop: '16px',
-                  }}
-                >
-
-                  {filteredStores.map((store) => (
-
-                    <div
-                      key={store.id}
-                      onClick={() => {
-                        setSelectedPlace({
-                          lat: store.lat,
-                          lon: store.lng,
-                          name: store.name,
-                          display_name: store.name,
-                        })
-                        setCurrentPage('地図')
-                      }}
-                      style={{
-                        padding: '16px',
-                        borderRadius: '12px',
-                        background: '#fff',
-                        border: '1px solid #eee',
-                        cursor: 'pointer',
-                      }}
-                    >
-
-                      <h3
-                        style={{
-                          margin:
-                            '0 0 8px 0',
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '12px',
+                      marginTop: '16px',
+                    }}
+                  >
+                    {filteredStores.map((store) => (
+                      <StoreCard
+                        key={store.id}
+                        store={store}
+                        onSelect={(store) => {
+                          setSelectedPlace({
+                            lat: store.lat,
+                            lon: store.lng,
+                            name: store.name,
+                            display_name: store.name,
+                          })
+                          setCurrentPage('地図')
                         }}
-                      >
-                        {store.name}
-                      </h3>
-                      <p
-                        style={{
-                          color: '#666',
-                          marginBottom: '8px',
-                        }}
-                      >
-                        {store.category}
-                      </p>
-
-
-                      <a
-                        href={store.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Instagramを見る
-                      </a>
-
-
-                      <button
-                        onClick={() =>
-                          deleteStore(
-                            store.id
-                          )
-                        }
-                        style={{
-                          display: 'block',
-                          marginTop: '10px',
-                          border: 'none',
-                          background: 'none',
-                          color: '#999',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        削除
-                      </button>
-
-                    </div>
-
-                  ))}
-
-                </div>
+                        onDelete={deleteStore}
+                      />
+                    ))}
+                  </div>
 
               )}
 
@@ -939,124 +666,16 @@ function App() {
 
           )}
 
+          {/* 地図画面 */}
 
-          {/* =========================
-              地図画面
-          ========================= */}
-
-          {currentPage === '地図' && (
-
-            <div className="map-placeholder">
-
-              <div className="map-placeholder-icon">
-                📍
-              </div>
-
-              <h3>
-                地図
-              </h3>
-
-
-              <MapContainer
-                center={[
-                  35.1815,
-                  136.9066,
-                ]}
-                zoom={13}
-                zoomControl={true}
-                style={{
-                  height: '400px',
-                  width: '100%',
-                }}
-              >
-
-                <TileLayer
-                  attribution="&copy; OpenStreetMap contributors"
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-
-                <MapController selectedPlace={selectedPlace} />
-
-
-                {/* 登録したお店をピン表示 */}
-
-                {selectedPlace && (
-                  <Marker
-                    position={[
-                      Number(selectedPlace.lat),
-                      Number(selectedPlace.lon),
-                    ]}
-                  >
-                    <Popup>
-                      {selectedPlace.name ||
-                        selectedPlace.display_name}
-                    </Popup>
-                  </Marker>
-                )}
-
-                {filteredStores.map((store) => (
-
-                  <Marker
-                    key={store.id}
-                    position={[
-                      store.lat,
-                      store.lng,
-                    ]}
-                    icon={createIcon(
-                      iconColors[store.category] || "blue"
-                    )}
-                  >
-
-                    <Popup>
-
-                      <div>
-
-                        <h3>
-                          {store.name}
-                        </h3>
-                        <p>
-                          {store.category}
-                        </p>
-                        {store.url && (
-
-                          <a
-                            href={store.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            Instagramを見る
-                          </a>
-
-                        )}
-
-
-                        <br />
-                        <br />
-
-
-                        <button
-                          onClick={() =>
-                            deleteStore(
-                              store.id
-                            )
-                          }
-                        >
-                          削除
-                        </button>
-
-                      </div>
-
-                    </Popup>
-
-                  </Marker>
-
-                ))}
-
-              </MapContainer>
-
-            </div>
-
-          )}
+      {currentPage === '地図' && (
+        <MapView
+          selectedPlace={selectedPlace}
+          filteredStores={filteredStores}
+          deleteStore={deleteStore}
+        />
+      )}
+ 
 
         </section>
 
