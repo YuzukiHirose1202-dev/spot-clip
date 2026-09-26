@@ -11,7 +11,7 @@ body {
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
-  background: #f8f8f6;
+  background: #ffffff;
   color: #222222;
 }
 
@@ -24,14 +24,18 @@ button {
   border: none;
   cursor: pointer;
 }
-
+.logo-icon img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
 /* =========================
    アプリ全体
 ========================= */
 
 .app {
   min-height: 100vh;
-  background: #f8f8f6;
+  background: #ffffff;
   padding-bottom: 90px;
 }
 
@@ -51,7 +55,7 @@ button {
   align-items: center;
   justify-content: space-between;
 
-  background: rgba(248, 248, 246, 0.95);
+  background: rgba(255, 255, 255, 0.95);
   border-bottom: 1px solid #eeeeea;
   backdrop-filter: blur(12px);
 }
@@ -176,7 +180,7 @@ button {
 
   padding: 0 15px;
 
-  background: white;
+  background: #e5ebf1;
   border: 1px solid #eeeeea;
   border-radius: 15px;
 }
@@ -225,7 +229,7 @@ button {
 
   padding: 4px;
 
-  background: #ecece7;
+  background: #e5ebf1;
   border-radius: 13px;
 }
 
@@ -325,7 +329,7 @@ button {
 
   border-radius: 20px;
 
-  background: #e9eee7;
+  background: #e5ebf1;
 }
 
 .weekend-header {
@@ -428,7 +432,7 @@ button {
 
   padding: 3px;
 
-  background: #ecece7;
+  background: #e5ebf1;
   border-radius: 10px;
 }
 
@@ -624,7 +628,7 @@ button {
 
   border-radius: 50%;
 
-  background: #222222;
+  background: #e88190;
   color: white;
 
   font-size: 25px;
