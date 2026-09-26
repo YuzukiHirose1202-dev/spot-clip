@@ -181,6 +181,7 @@ const handleSearch = async () => {
         name: name.trim(),
         url: url.trim(),
         category: selectedCategory,
+        status: '行きたい',
         lat,
         lng,
       }
@@ -278,13 +279,36 @@ const handleSearch = async () => {
   // お店を削除
   // =========================
 
-  const filteredStores =
+  const filteredStores = stores.filter((store) => {
+
+  const categoryMatch =
     activeCategory === 'すべて'
-      ? stores
-      : stores.filter(
-        (store) =>
-          store.category === activeCategory
-      )
+      ? true
+      : store.category === activeCategory
+
+  const statusMatch =
+    activeTab === 'すべて'
+      ? true
+      : store.status === activeTab
+
+  return categoryMatch && statusMatch
+})
+
+const updateStoreStatus = (
+  id,
+  status
+) => {
+  setStores((prev) =>
+    prev.map((store) =>
+      store.id === id
+        ? {
+            ...store,
+            status,
+          }
+        : store
+    )
+  )
+}
 
   const deleteStore = (id) => {
 
@@ -526,9 +550,14 @@ const handleSearch = async () => {
                 {tab}
 
                 <span className="tab-count">
-                  {tab === 'すべて'
-                    ? stores.length
-                    : 0}
+                  {
+                      tab === 'すべて'
+                        ? stores.length
+                        : stores.filter(
+                            (store) =>
+                              store.status === tab
+                          ).length
+                  }
                 </span>
 
               </button>
@@ -759,6 +788,7 @@ const handleSearch = async () => {
                           setCurrentPage('地図')
                         }}
                         onDelete={deleteStore}
+                        onStatusChange={updateStoreStatus}
                         isSelected={selectedStoreIds.includes(store.id)}
                         onToggleSelect={toggleStoreSelection}
                       />

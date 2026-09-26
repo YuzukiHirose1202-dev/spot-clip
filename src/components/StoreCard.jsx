@@ -4,6 +4,7 @@ function StoreCard({
   onDelete,
   isSelected,
   onToggleSelect,
+  onStatusChange,
 }) {
   return (
     <div
@@ -35,30 +36,32 @@ function StoreCard({
             />
             AI旅行プランに追加
       </label>
-      <h3
-        style={{
-          margin: '0 0 8px 0',
-        }}
-      >
-        {store.name}
-      </h3>
+      <h3>{store.name}</h3>
 
-      <p
-        style={{
-          color: '#666',
-          marginBottom: '8px',
-        }}
-      >
-        {store.category}
-      </p>
+<p>
+  {store.category}
+</p>
 
-      <a
-        href={store.url}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Instagramを見る
-      </a>
+<p
+  style={{
+    fontSize: '12px',
+    fontWeight: 'bold',
+    color:
+      store.status === '行った'
+        ? '#4CAF50'
+        : '#e88190',
+  }}
+>
+  {store.status}
+</p>
+
+<a
+  href={store.url}
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  Instagramを見る
+</a>
 
       <button
         onClick={(event) => {
@@ -76,6 +79,67 @@ function StoreCard({
       >
         削除
       </button>
+      <div
+  style={{
+    display: 'flex',
+    gap: '8px',
+    marginTop: '10px',
+  }}
+>
+  <button
+  onClick={(e) => {
+    e.stopPropagation()
+    onStatusChange(store.id, '行きたい')
+  }}
+  style={{
+    padding: '8px 12px',
+    borderRadius: '8px',
+    border: 'none',
+    cursor: 'pointer',
+    background:
+      store.status === '行きたい'
+        ? '#e88190'
+        : '#f3f3f3',
+    color:
+      store.status === '行きたい'
+        ? '#fff'
+        : '#666',
+    fontWeight:
+      store.status === '行きたい'
+        ? 'bold'
+        : 'normal',
+  }}
+>
+  行きたい
+</button>
+
+  <button
+  onClick={(e) => {
+    e.stopPropagation()
+    onStatusChange(store.id, '行った')
+  }}
+  style={{
+    padding: '8px 12px',
+    borderRadius: '8px',
+    border: 'none',
+    cursor: 'pointer',
+    background:
+      store.status === '行った'
+        ? '#7dc7a6'
+        : '#f3f3f3',
+    color:
+      store.status === '行った'
+        ? '#fff'
+        : '#666',
+    fontWeight:
+      store.status === '行った'
+        ? 'bold'
+        : 'normal',
+  }}
+>
+  行った
+</button>
+</div>
     </div>
   )
 }
