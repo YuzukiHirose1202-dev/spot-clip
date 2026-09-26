@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import MapView from './components/MapView'
 import StoreCard from './components/StoreCard'
 import SearchBox from './components/SearchBox'
+import MyPage from './components/MyPage'
 import {
   searchPlaces,
   findPlace,
@@ -24,7 +25,6 @@ function App() {
 
   // 検索結果から選択した場所
   const [selectedPlace, setSelectedPlace] = useState(null)
-
 
   // =========================
   // 検索用
@@ -54,7 +54,6 @@ function App() {
       : []
   })
 
-
   // storesが変更されたらlocalStorageに保存
   useEffect(() => {
     localStorage.setItem(
@@ -62,7 +61,6 @@ function App() {
       JSON.stringify(stores)
     )
   }, [stores])
-
 
   // =========================
   // カテゴリー
@@ -78,8 +76,6 @@ function App() {
     { name: '雑貨・ショップ', icon: '🛍️' },
   ]
 
-
-
   // =========================
   // 店を検索
   // =========================
@@ -94,17 +90,13 @@ function App() {
       const results = await searchPlaces(searchText)
 
       setSearchResults(results)
-
     } catch (error) {
       console.error(error)
       setSearchResults([])
-
     } finally {
       setIsSearching(false)
     }
   }
-
-
 
   // =========================
   // 検索結果を選択
@@ -113,30 +105,24 @@ function App() {
   const selectPlace = (result) => {
     setSelectedPlace(result)
 
-    // 店名を自動入力
     setName(
       result.name ||
       result.display_name?.split(',')[0] ||
       ''
     )
 
-    // Instagram URLはあとから入力
     setUrl('')
 
-    // 登録フォームを表示
     setShowAddForm(true)
 
-    // 検索結果を閉じる
     setSearchResults([])
   }
-
 
   // =========================
   // お店を登録
   // =========================
 
   const addStore = async () => {
-
     if (!name.trim()) {
       alert('店名を入力してください')
       return
@@ -147,21 +133,15 @@ function App() {
       return
     }
 
-
     try {
-
       let lat
       let lng
 
-
       // 検索結果から選択した場合
       if (selectedPlace) {
-
         lat = Number(selectedPlace.lat)
         lng = Number(selectedPlace.lon)
-
       } else {
-
         // 検索結果を使わず直接入力した場合
         const place = await findPlace(name)
 
@@ -174,7 +154,6 @@ function App() {
         lng = Number(place.lon)
       }
 
-
       // 新しい店舗データ
       const newStore = {
         id: Date.now(),
@@ -186,13 +165,11 @@ function App() {
         lng,
       }
 
-
       // 保存
       setStores((prev) => [
         ...prev,
         newStore,
       ])
-
 
       // 入力をリセット
       setName('')
@@ -202,9 +179,7 @@ function App() {
 
       // ホームに戻す
       setCurrentPage('ホーム')
-
     } catch (error) {
-
       console.error(error)
 
       alert(
@@ -212,14 +187,17 @@ function App() {
       )
     }
   }
+
   // =========================
-  // AI旅行プラン用
+  // AI旅行プラン
   // =========================
 
   const toggleStoreSelection = (storeId) => {
     setSelectedStoreIds((prev) => {
       if (prev.includes(storeId)) {
-        return prev.filter((id) => id !== storeId)
+        return prev.filter(
+          (id) => id !== storeId
+        )
       }
 
       return [...prev, storeId]
@@ -238,8 +216,9 @@ function App() {
     }
 
     try {
-      const selectedStores = stores.filter((store) =>
-        selectedStoreIds.includes(store.id)
+      const selectedStores = stores.filter(
+        (store) =>
+          selectedStoreIds.includes(store.id)
       )
 
       const response = await fetch(
@@ -260,12 +239,12 @@ function App() {
 
       if (!response.ok) {
         throw new Error(
-          data.error || 'AI旅行プランの作成に失敗しました'
+          data.error ||
+          'AI旅行プランの作成に失敗しました'
         )
       }
 
       setTravelPlan(data.plan)
-
     } catch (error) {
       console.error(error)
 
@@ -276,11 +255,10 @@ function App() {
   }
 
   // =========================
-  // お店を削除
+  // 保存したお店を絞り込み
   // =========================
 
   const filteredStores = stores.filter((store) => {
-
     const categoryMatch =
       activeCategory === 'すべて'
         ? true
@@ -293,6 +271,10 @@ function App() {
 
     return categoryMatch && statusMatch
   })
+
+  // =========================
+  // お店のステータス変更
+  // =========================
 
   const updateStoreStatus = (
     id,
@@ -310,8 +292,11 @@ function App() {
     )
   }
 
-  const deleteStore = (id) => {
+  // =========================
+  // お店を削除
+  // =========================
 
+  const deleteStore = (id) => {
     setStores((prev) =>
       prev.filter(
         (store) => store.id !== id
@@ -319,38 +304,16 @@ function App() {
     )
   }
 
+  // =========================================================
+  // ホーム画面
+  // =========================================================
 
-  return (
-    <div className="app">
-
-      {/* ヘッダー */}
-      <header className="header">
-
-        <div className="logo">
-          <span className="logo-icon">
-            <img src="/logo.png" alt="SNS PLACE" />
-          </span>
-
-          <span>
-            SNS PLACE
-          </span>
-        </div>
-
-        <button className="profile-button">
-          ♡
-        </button>
-
-      </header>
-
-
-      {/* メイン */}
-      <main className="main-content">
-
+  const renderHome = () => {
+    return (
+      <>
         {/* あいさつ */}
         <section className="greeting-section">
-
           <div>
-
             <p className="small-text">
               SNS PLACEへようこそ
             </p>
@@ -358,12 +321,11 @@ function App() {
             <h1>
               週末の計画はどうする？
             </h1>
-
           </div>
+
           <button className="notification-button">
             🔔
           </button>
-
         </section>
 
         {/* 検索 */}
@@ -376,13 +338,11 @@ function App() {
           onSelectPlace={selectPlace}
         />
 
-
         {/* =========================
             登録フォーム
         ========================= */}
 
         {showAddForm && (
-
           <div
             style={{
               background: '#fff',
@@ -393,7 +353,6 @@ function App() {
                 '0 4px 20px rgba(0,0,0,0.08)',
             }}
           >
-
             <h2>
               スポットを登録
             </h2>
@@ -406,7 +365,6 @@ function App() {
             >
               店名とInstagramのURLを入力してください
             </p>
-
 
             <input
               type="text"
@@ -425,7 +383,6 @@ function App() {
               }}
             />
 
-
             <input
               type="url"
               value={url}
@@ -442,10 +399,13 @@ function App() {
                 border: '1px solid #ddd',
               }}
             />
+
             <select
               value={selectedCategory}
               onChange={(e) =>
-                setSelectedCategory(e.target.value)
+                setSelectedCategory(
+                  e.target.value
+                )
               }
               style={{
                 width: '100%',
@@ -481,14 +441,12 @@ function App() {
               </option>
             </select>
 
-
             <div
               style={{
                 display: 'flex',
                 gap: '8px',
               }}
             >
-
               <button
                 onClick={addStore}
                 style={{
@@ -503,7 +461,6 @@ function App() {
               >
                 保存
               </button>
-
 
               <button
                 onClick={() => {
@@ -523,63 +480,51 @@ function App() {
               >
                 キャンセル
               </button>
-
             </div>
-
           </div>
         )}
 
-
         {/* タブ */}
         <div className="tab-container">
-
-          {['すべて', '行きたい', '行った'].map(
-            (tab) => (
-
-              <button
-                key={tab}
-                className={`tab-button ${activeTab === tab
+          {[
+            'すべて',
+            '行きたい',
+            '行った',
+          ].map((tab) => (
+            <button
+              key={tab}
+              className={`tab-button ${activeTab === tab
                   ? 'active'
                   : ''
-                  }`}
-                onClick={() =>
-                  setActiveTab(tab)
-                }
-              >
+                }`}
+              onClick={() =>
+                setActiveTab(tab)
+              }
+            >
+              {tab}
 
-                {tab}
-
-                <span className="tab-count">
-                  {
-                    tab === 'すべて'
-                      ? stores.length
-                      : stores.filter(
-                        (store) =>
-                          store.status === tab
-                      ).length
-                  }
-                </span>
-
-              </button>
-
-            )
-          )}
-
+              <span className="tab-count">
+                {tab === 'すべて'
+                  ? stores.length
+                  : stores.filter(
+                    (store) =>
+                      store.status === tab
+                  ).length}
+              </span>
+            </button>
+          ))}
         </div>
-
 
         {/* カテゴリー */}
         <section className="category-section">
-
           <div className="category-scroll">
-
             {categories.map((category) => (
-
               <button
                 key={category.name}
-                className={`category-chip ${activeCategory === category.name
-                  ? 'active'
-                  : ''
+                className={`category-chip ${activeCategory ===
+                    category.name
+                    ? 'active'
+                    : ''
                   }`}
                 onClick={() =>
                   setActiveCategory(
@@ -587,29 +532,22 @@ function App() {
                   )
                 }
               >
-
                 <span>
                   {category.icon}
                 </span>
 
                 {category.name}
-
               </button>
-
             ))}
-
           </div>
-
         </section>
-
 
         {/* =========================
             AI旅行プラン
         ========================= */}
+
         <section className="weekend-card">
-
           <div className="weekend-header">
-
             <div>
               <p className="section-label">
                 AI TRAVEL PLAN
@@ -623,7 +561,6 @@ function App() {
             <span className="candidate-count">
               {selectedStoreIds.length}件選択
             </span>
-
           </div>
 
           <p className="weekend-area">
@@ -634,7 +571,9 @@ function App() {
           <textarea
             value={travelPreferences}
             onChange={(e) =>
-              setTravelPreferences(e.target.value)
+              setTravelPreferences(
+                e.target.value
+              )
             }
             placeholder="例：カフェを中心に、ゆっくり回りたい"
             rows={4}
@@ -674,21 +613,24 @@ function App() {
                 whiteSpace: 'pre-wrap',
               }}
             >
-              <h3>旅行プラン</h3>
-              <p>{travelPlan}</p>
+              <h3>
+                旅行プラン
+              </h3>
+
+              <p>
+                {travelPlan}
+              </p>
             </div>
           )}
-
         </section>
 
+        {/* =========================
+            保存したスポット
+        ========================= */}
 
-        {/* 保存したスポット */}
         <section className="places-section">
-
           <div className="places-header">
-
             <div>
-
               <p className="section-label">
                 MY PLACES
               </p>
@@ -700,13 +642,10 @@ function App() {
               <p className="sub-text">
                 登録した場所がここに表示されます
               </p>
-
             </div>
-
 
             {/* 表示切り替え */}
             <div className="view-buttons">
-
               <button
                 className={
                   currentPage === 'ホーム'
@@ -720,7 +659,6 @@ function App() {
                 ▦
               </button>
 
-
               <button
                 className={
                   currentPage === '地図'
@@ -733,89 +671,171 @@ function App() {
               >
                 ⌖
               </button>
-
             </div>
-
           </div>
-          {/* =========================
-              ホーム画面
-          ========================= */}
 
-          {currentPage === 'ホーム' && (
+          {filteredStores.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-icon">
+                📍
+              </div>
 
-            <>
-              {filteredStores.length === 0 ? (
+              <h3>
+                まだ場所がありません
+              </h3>
 
-                <div className="empty-state">
+              <p>
+                行きたい場所や行った場所を
+                <br />
+                登録してみましょう
+              </p>
+            </div>
+          ) : (
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+                marginTop: '16px',
+              }}
+            >
+              {filteredStores.map((store) => (
+                <StoreCard
+                  key={store.id}
+                  store={store}
+                  onSelect={(store) => {
+                    setSelectedPlace({
+                      lat: store.lat,
+                      lon: store.lng,
+                      name: store.name,
+                      display_name:
+                        store.name,
+                    })
 
-                  <div className="empty-icon">
-                    📍
-                  </div>
-
-                  <h3>
-                    まだ場所がありません
-                  </h3>
-
-                  <p>
-                    行きたい場所や行った場所を
-                    <br />
-                    登録してみましょう
-                  </p>
-
-                </div>
-
-              ) : (
-
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '12px',
-                    marginTop: '16px',
+                    setCurrentPage('地図')
                   }}
-                >
-                  {filteredStores.map((store) => (
-                    <StoreCard
-                      key={store.id}
-                      store={store}
-                      onSelect={(store) => {
-                        setSelectedPlace({
-                          lat: store.lat,
-                          lon: store.lng,
-                          name: store.name,
-                          display_name: store.name,
-                        })
-                        setCurrentPage('地図')
-                      }}
-                      onDelete={deleteStore}
-                      onStatusChange={updateStoreStatus}
-                      isSelected={selectedStoreIds.includes(store.id)}
-                      onToggleSelect={toggleStoreSelection}
-                    />
-                  ))}
-                </div>
-
-              )}
-
-            </>
-
+                  onDelete={deleteStore}
+                  onStatusChange={
+                    updateStoreStatus
+                  }
+                  isSelected={selectedStoreIds.includes(
+                    store.id
+                  )}
+                  onToggleSelect={
+                    toggleStoreSelection
+                  }
+                />
+              ))}
+            </div>
           )}
-
-          {/* 地図画面 */}
-
-          {currentPage === '地図' && (
-            <MapView
-              selectedPlace={selectedPlace}
-              filteredStores={filteredStores}
-              deleteStore={deleteStore}
-            />
-          )}
-
-
         </section>
+      </>
+    )
+  }
 
+  // =========================================================
+  // 地図画面
+  // =========================================================
+
+  const renderMap = () => {
+    return (
+      <section
+        className="map-page"
+        style={{
+          width: '100%',
+        }}
+      >
+        <MapView
+          selectedPlace={selectedPlace}
+          filteredStores={filteredStores}
+          deleteStore={deleteStore}
+        />
+      </section>
+    )
+  }
+
+  // =========================================================
+  // マイページ
+  // =========================================================
+
+  const renderMyPage = () => {
+    return (
+      <section className="mypage-page">
+        <MyPage
+          stores={stores}
+          onEditProfile={() => {
+            console.log(
+              'プロフィール編集'
+            )
+          }}
+        />
+      </section>
+    )
+  }
+
+  // =========================================================
+  // 現在のページを表示
+  // =========================================================
+
+  const renderCurrentPage = () => {
+    if (currentPage === 'ホーム') {
+      return renderHome()
+    }
+
+    if (currentPage === '地図') {
+      return renderMap()
+    }
+
+    if (currentPage === 'マイページ') {
+      return renderMyPage()
+    }
+
+    return renderHome()
+  }
+
+  // =========================================================
+  // JSX
+  // =========================================================
+
+  return (
+    <div className="app">
+
+      {/* =========================
+          ヘッダー
+      ========================= */}
+
+      <header className="header">
+        <div className="logo">
+          <span className="logo-icon">
+            <img
+              src="/logo.png"
+              alt="SNS PLACE"
+            />
+          </span>
+
+          <span>
+            SNS PLACE
+          </span>
+        </div>
+
+        <button className="profile-button">
+          ♡
+        </button>
+      </header>
+
+      {/* =========================
+          メイン
+      ========================= */}
+
+      <main
+        className={
+          currentPage === 'マイページ'
+            ? 'main-content mypage-main'
+            : 'main-content'
+        }
+      >
+        {renderCurrentPage()}
       </main>
-
 
       {/* =========================
           下部ナビゲーション
@@ -823,22 +843,29 @@ function App() {
 
       <nav className="bottom-nav">
 
+        {/* ホーム */}
+
         <button
           className={
             currentPage === 'ホーム'
               ? 'nav-item active'
               : 'nav-item'
           }
-          onClick={() =>
+          onClick={() => {
             setCurrentPage('ホーム')
-          }
+            setShowAddForm(false)
+          }}
         >
-          <span>⌂</span>
+          <span>
+            ⌂
+          </span>
+
           <small>
             ホーム
           </small>
         </button>
 
+        {/* 地図 */}
 
         <button
           className={
@@ -846,16 +873,19 @@ function App() {
               ? 'nav-item active'
               : 'nav-item'
           }
-          onClick={() =>
+          onClick={() => {
             setCurrentPage('地図')
-          }
+            setShowAddForm(false)
+          }}
         >
-          <span>⌖</span>
+          <span>
+            ⌖
+          </span>
+
           <small>
             地図
           </small>
         </button>
-
 
         {/* ＋ボタン */}
 
@@ -866,14 +896,22 @@ function App() {
             setUrl('')
             setSelectedPlace(null)
             setShowAddForm(true)
+
+            // 登録フォームはホーム上で表示
+            setCurrentPage('ホーム')
           }}
         >
           ＋
         </button>
 
+        {/* 共有 */}
 
-        <button className="nav-item">
-
+        <button
+          className="nav-item"
+          onClick={() => {
+            console.log('共有')
+          }}
+        >
           <span>
             ♧
           </span>
@@ -881,12 +919,24 @@ function App() {
           <small>
             共有
           </small>
-
         </button>
 
+        {/* マイページ */}
 
-        <button className="nav-item">
+        <button
+          className={
+            currentPage === 'マイページ'
+              ? 'nav-item active'
+              : 'nav-item'
+          }
+          onClick={() => {
+            // ホーム側の登録フォームを閉じる
+            setShowAddForm(false)
 
+            // マイページへ移動
+            setCurrentPage('マイページ')
+          }}
+        >
           <span>
             ♡
           </span>
@@ -894,11 +944,9 @@ function App() {
           <small>
             マイページ
           </small>
-
         </button>
 
       </nav>
-
     </div>
   )
 }

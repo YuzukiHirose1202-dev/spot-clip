@@ -1,17 +1,28 @@
-function MyPage({
-    stores = [],
-    onEditProfile,
-}) {
-    // ハリボテのプロフィール情報
+import "./MyPage.css";
+import ichigoImage from "../assets/ichigo.jpg";
+
+function MyPage({ stores = [], onEditProfile }) {
+    const savedCount = stores.length
+    const wantCount = stores.filter(
+        (store) => store.status === '行きたい'
+    ).length
+    const visitedCount = stores.filter(
+        (store) => store.status === '行った'
+    ).length
+
     const profile = {
         name: 'めい / Mei',
         username: '@mei_lifestyle',
-        bio: '都内近郊の淡色カフェと建築巡り☕📸\nInstagram保存スポットを整理中✨',
-        image:
-            'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400',
+        bio: (
+            <>
+                都内近郊の淡色カフェと建築巡り ☕📸
+                <br />
+                Instagram保存スポットを整理中 ✨
+            </>
+        ),
+        image: ichigoImage,
     }
 
-    // ハリボテの共有グループ
     const groups = [
         {
             id: 1,
@@ -36,23 +47,23 @@ function MyPage({
         },
     ]
 
-    const savedCount = stores.length
-
-    const wantCount = stores.filter(
-        (store) => store.status === '行きたい'
-    ).length
-
-    const visitedCount = stores.filter(
-        (store) => store.status === '行った'
-    ).length
-
     return (
-        <main className="mypage">
-            <h1 className="mypage-title">
-                マイページ
-            </h1>
+        <div className="mypage">
+            {/* ページタイトル */}
+            <div className="mypage-title-row">
+                <h1>マイページ</h1>
+                <span className="mypage-title-dot"></span>
 
-            {/* プロフィール */}
+                <button
+                    className="mypage-setting-button"
+                    type="button"
+                    aria-label="設定"
+                >
+                    ⚙
+                </button>
+            </div>
+
+            {/* プロフィールカード */}
             <section className="profile-card">
                 <div className="profile-image-wrapper">
                     <img
@@ -61,7 +72,11 @@ function MyPage({
                         className="profile-image"
                     />
 
-                    <button className="profile-camera">
+                    <button
+                        className="profile-camera-button"
+                        type="button"
+                        aria-label="プロフィール画像を変更"
+                    >
                         📷
                     </button>
                 </div>
@@ -71,67 +86,99 @@ function MyPage({
                 </h2>
 
                 <p className="profile-username">
-                    ◈ {profile.username}
+                    <span className="verified-mark">✧</span>
+                    {profile.username}
                 </p>
 
                 <p className="profile-bio">
-                    {profile.bio.split('\n').map((line, index) => (
-                        <span key={index}>
-                            {line}
-                            <br />
-                        </span>
-                    ))}
+                    {profile.bio}
                 </p>
 
                 <button
-                    className="edit-profile-button"
+                    className="profile-edit-button"
+                    type="button"
                     onClick={onEditProfile}
                 >
-                    ✎　プロフィールを編集
+                    <span className="edit-icon">✎</span>
+                    プロフィールを編集
                 </button>
             </section>
 
             {/* 統計 */}
             <section className="profile-stats">
-                <div className="profile-stat">
-                    <strong>{savedCount}</strong>
-                    <span>保存した場所</span>
+                <div className="stat-card">
+                    <strong className="stat-number saved">
+                        {savedCount}
+                    </strong>
+
+                    <span className="stat-label">
+                        保存した場所
+                    </span>
+
+                    <span className="stat-icon saved-icon">
+                        ♡
+                    </span>
                 </div>
 
-                <div className="profile-stat">
-                    <strong>{wantCount}</strong>
-                    <span>行きたい</span>
+                <div className="stat-card">
+                    <strong className="stat-number want">
+                        {wantCount}
+                    </strong>
+
+                    <span className="stat-label">
+                        行きたい
+                    </span>
+
+                    <span className="stat-icon want-icon">
+                        ♡
+                    </span>
                 </div>
 
-                <div className="profile-stat">
-                    <strong>{visitedCount}</strong>
-                    <span>行った</span>
+                <div className="stat-card">
+                    <strong className="stat-number visited">
+                        {visitedCount}
+                    </strong>
+
+                    <span className="stat-label">
+                        行った
+                    </span>
+
+                    <span className="stat-icon visited-icon">
+                        ✓
+                    </span>
                 </div>
             </section>
 
-            {/* グループ */}
+            {/* 共有グループ */}
             <section className="groups-section">
-                <div className="groups-header">
-                    <h2>
-                        👥 参加中の共有グループ
+                <div className="section-heading">
+                    <div className="section-heading-left">
+                        <span className="groups-heading-icon">
+                            ♡
+                        </span>
+
+                        <h2>参加中の共有グループ</h2>
+
                         <span className="group-count">
                             {groups.length}
                         </span>
-                    </h2>
+                    </div>
 
-                    <button className="view-all-button">
+                    <button
+                        className="view-all-button"
+                        type="button"
+                    >
                         すべて見る
+                        <span>›</span>
                     </button>
                 </div>
 
-                <div className="groups-card">
-                    {groups.map((group, index) => (
-                        <div
+                <div className="group-list">
+                    {groups.map((group) => (
+                        <button
+                            className="group-card"
                             key={group.id}
-                            className={`group-item ${index === groups.length - 1
-                                    ? 'last'
-                                    : ''
-                                }`}
+                            type="button"
                         >
                             <div className="group-icon">
                                 {group.icon}
@@ -147,19 +194,22 @@ function MyPage({
                                 </p>
                             </div>
 
-                            <div className="group-arrow">
+                            <span className="group-arrow">
                                 ›
-                            </div>
-                        </div>
+                            </span>
+                        </button>
                     ))}
                 </div>
 
-                <button className="new-group-button">
-                    <span>⊕</span>
-                    新しいグループを作成
+                <button
+                    className="create-group-button"
+                    type="button"
+                >
+                    <span>＋</span>
+                    新しい共有グループを作成
                 </button>
             </section>
-        </main>
+        </div>
     )
 }
 

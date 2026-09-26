@@ -1,0 +1,739 @@
+/* ========================================
+   My Page
+======================================== */
+
+.mypage {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 20px 120px;
+    box-sizing: border-box;
+    color: #172033;
+}
+
+/* ========================================
+   Title
+======================================== */
+
+.mypage-title-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+}
+
+.mypage-title-row h1 {
+    margin: 0;
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -1px;
+}
+
+.mypage-title-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #ef718f;
+}
+
+.mypage-setting-button {
+    margin-left: auto;
+
+    width: 58px;
+    height: 58px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 8px 24px rgba(50, 45, 80, 0.08);
+
+    color: #62585b;
+
+    font-size: 27px;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.mypage-setting-button:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 12px 28px rgba(50, 45, 80, 0.12);
+}
+
+/* ========================================
+   Profile Card
+======================================== */
+
+.profile-card {
+    position: relative;
+
+    padding: 52px 40px 40px;
+
+    border-radius: 30px;
+
+    background:
+        linear-gradient(145deg,
+            #fff5f7 0%,
+            #ffffff 35%,
+            #ffffff 100%);
+
+    box-shadow:
+        0 10px 30px rgba(44, 37, 70, 0.07);
+
+    text-align: center;
+
+    overflow: hidden;
+}
+
+.profile-card::before {
+    content: '';
+
+    position: absolute;
+
+    width: 260px;
+    height: 260px;
+
+    top: -150px;
+    left: -100px;
+
+    border-radius: 50%;
+
+    background: rgba(246, 187, 202, 0.16);
+
+    pointer-events: none;
+}
+
+/* ========================================
+   Profile Image
+======================================== */
+
+.profile-image-wrapper {
+    position: relative;
+
+    width: 180px;
+    height: 180px;
+
+    margin: 0 auto 26px;
+}
+
+.profile-image-wrapper::before {
+    content: '';
+
+    position: absolute;
+
+    inset: -8px;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(135deg,
+            #f5a4b9,
+            #d5c5ff);
+
+    z-index: 0;
+}
+
+.profile-image {
+    position: relative;
+
+    width: 100%;
+    height: 100%;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    border: 6px solid #ffffff;
+
+    box-sizing: border-box;
+
+    z-index: 1;
+
+    box-shadow:
+        0 8px 20px rgba(80, 60, 100, 0.12);
+}
+
+.profile-camera-button {
+    position: absolute;
+
+    right: -2px;
+    bottom: -2px;
+
+    width: 58px;
+    height: 58px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #b64061;
+
+    color: #ffffff;
+
+    font-size: 25px;
+
+    box-shadow:
+        0 8px 18px rgba(120, 45, 75, 0.25);
+
+    cursor: pointer;
+
+    z-index: 3;
+}
+
+/* ========================================
+   Profile Text
+======================================== */
+
+.profile-name {
+    margin: 0;
+
+    font-size: 34px;
+    font-weight: 700;
+
+    letter-spacing: -1px;
+}
+
+.profile-username {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 8px;
+
+    margin: 10px 0 26px;
+
+    color: #6b5964;
+
+    font-size: 21px;
+    font-weight: 600;
+}
+
+.verified-mark {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 25px;
+    height: 25px;
+
+    color: #c94e70;
+
+    font-size: 24px;
+}
+
+.profile-bio {
+    margin: 0 0 30px;
+
+    color: #202333;
+
+    font-size: 20px;
+
+    line-height: 1.8;
+
+    letter-spacing: 0.3px;
+}
+
+/* ========================================
+   Edit Button
+======================================== */
+
+.profile-edit-button {
+    width: 100%;
+
+    min-height: 68px;
+
+    border: none;
+
+    border-radius: 40px;
+
+    background:
+        linear-gradient(90deg,
+            #f4f2ff,
+            #f7f2ff);
+
+    color: #242334;
+
+    font-size: 20px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.profile-edit-button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(100, 80, 150, 0.08);
+}
+
+.edit-icon {
+    margin-right: 12px;
+
+    color: #b74768;
+
+    font-size: 29px;
+    font-weight: 400;
+}
+
+/* ========================================
+   Stats
+======================================== */
+
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 28px;
+}
+
+.stat-card {
+    min-height: 145px;
+    padding: 22px 12px;
+
+    box-sizing: border-box;
+
+    background: #ffffff;
+
+    /* 四角に近い角丸 */
+    border: 1px solid #f0edf2;
+    border-radius: 18px;
+
+    box-shadow:
+        0 5px 16px rgba(44, 37, 70, 0.06);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 42px;
+    line-height: 1;
+    font-weight: 700;
+}
+
+.stat-label {
+    color: #514a4d;
+
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.stat-icon {
+    margin-top: 9px;
+    font-size: 20px;
+}
+
+.saved-icon {
+    color: #d65779;
+}
+
+.want-icon {
+    color: #7659d2;
+}
+
+.visited-icon {
+    color: #747762;
+}
+
+/* ========================================
+   Groups
+======================================== */
+
+.groups-section {
+    margin-top: 42px;
+}
+
+.section-heading {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 18px;
+}
+
+.section-heading-left {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    min-width: 0;
+}
+
+.groups-heading-icon {
+    color: #b34162;
+
+    font-size: 31px;
+
+    flex-shrink: 0;
+}
+
+.section-heading h2 {
+    margin: 0;
+
+    font-size: 26px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.group-count {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 34px;
+    height: 34px;
+
+    padding: 0 8px;
+
+    box-sizing: border-box;
+
+    border-radius: 50%;
+
+    background: #ffd9e2;
+
+    color: #a93f5c;
+
+    font-size: 16px;
+
+    font-weight: 700;
+}
+
+.view-all-button {
+    border: none;
+
+    background: transparent;
+
+    color: #b13e60;
+
+    font-size: 17px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+}
+
+.view-all-button span {
+    margin-left: 5px;
+
+    font-size: 24px;
+}
+
+/* ========================================
+   Group Card
+======================================== */
+
+.group-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 14px;
+}
+
+.group-card {
+    width: 100%;
+
+    min-height: 110px;
+
+    padding: 18px 22px;
+
+    border: none;
+
+    border-radius: 24px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 7px 22px rgba(44, 37, 70, 0.055);
+
+    display: flex;
+
+    align-items: center;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.group-card:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 26px rgba(44, 37, 70, 0.09);
+}
+
+.group-icon {
+    width: 76px;
+    height: 76px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(135deg,
+            #fff0f4,
+            #ffe7ee);
+
+    font-size: 34px;
+}
+
+.group-info {
+    min-width: 0;
+
+    margin-left: 20px;
+}
+
+.group-info h3 {
+    margin: 0 0 8px;
+
+    color: #252535;
+
+    font-size: 21px;
+
+    font-weight: 700;
+}
+
+.group-info p {
+    margin: 0;
+
+    color: #81777a;
+
+    font-size: 16px;
+}
+
+.group-info p span {
+    margin: 0 7px;
+
+    color: #b5abad;
+}
+
+.group-arrow {
+    margin-left: auto;
+
+    color: #c44b6b;
+
+    font-size: 38px;
+
+    font-weight: 300;
+}
+
+/* ========================================
+   Create Group
+======================================== */
+
+.create-group-button {
+    width: 100%;
+
+    min-height: 60px;
+
+    margin-top: 16px;
+
+    border: 1px dashed #e5a2b4;
+
+    border-radius: 22px;
+
+    background: rgba(255, 245, 248, 0.8);
+
+    color: #ad4261;
+
+    font-size: 17px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.create-group-button span {
+    margin-right: 7px;
+
+    font-size: 24px;
+}
+
+/* ========================================
+   Mobile
+======================================== */
+
+@media (max-width: 600px) {
+    .mypage {
+        padding:
+            16px 16px 110px;
+    }
+
+    .mypage-title-row {
+        margin-bottom: 20px;
+    }
+
+    .mypage-title-row h1 {
+        font-size: 30px;
+    }
+
+    .mypage-setting-button {
+        width: 50px;
+        height: 50px;
+
+        font-size: 23px;
+    }
+
+    .profile-card {
+        padding: 38px 22px 28px;
+
+        border-radius: 26px;
+    }
+
+    .profile-image-wrapper {
+        width: 150px;
+        height: 150px;
+    }
+
+    .profile-camera-button {
+        width: 50px;
+        height: 50px;
+
+        font-size: 21px;
+    }
+
+    .profile-name {
+        font-size: 29px;
+    }
+
+    .profile-username {
+        font-size: 18px;
+    }
+
+    .profile-bio {
+        font-size: 16px;
+
+        line-height: 1.75;
+    }
+
+    .profile-edit-button {
+        min-height: 60px;
+
+        font-size: 17px;
+    }
+
+    .profile-stats {
+        gap: 10px;
+
+        margin-top: 18px;
+    }
+
+    .stat-card {
+        min-height: 125px;
+
+        border-radius: 20px;
+
+        padding: 12px 5px;
+    }
+
+    .stat-number {
+        font-size: 36px;
+    }
+
+    .stat-label {
+        font-size: 13px;
+    }
+
+    .stat-icon {
+        font-size: 18px;
+    }
+
+    .groups-section {
+        margin-top: 32px;
+    }
+
+    .section-heading h2 {
+        font-size: 21px;
+    }
+
+    .groups-heading-icon {
+        font-size: 25px;
+    }
+
+    .group-count {
+        min-width: 28px;
+        height: 28px;
+
+        font-size: 14px;
+    }
+
+    .view-all-button {
+        font-size: 14px;
+    }
+
+    .group-card {
+        min-height: 90px;
+
+        padding: 14px 16px;
+
+        border-radius: 20px;
+    }
+
+    .group-icon {
+        width: 60px;
+        height: 60px;
+
+        font-size: 27px;
+    }
+
+    .group-info {
+        margin-left: 13px;
+    }
+
+    .group-info h3 {
+        font-size: 17px;
+
+        margin-bottom: 5px;
+    }
+
+    .group-info p {
+        font-size: 13px;
+    }
+
+    .group-arrow {
+        font-size: 30px;
+    }
+}
