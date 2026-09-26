@@ -281,34 +281,34 @@ function App() {
 
   const filteredStores = stores.filter((store) => {
 
-  const categoryMatch =
-    activeCategory === 'すべて'
-      ? true
-      : store.category === activeCategory
+    const categoryMatch =
+      activeCategory === 'すべて'
+        ? true
+        : store.category === activeCategory
 
-  const statusMatch =
-    activeTab === 'すべて'
-      ? true
-      : store.status === activeTab
+    const statusMatch =
+      activeTab === 'すべて'
+        ? true
+        : store.status === activeTab
 
-  return categoryMatch && statusMatch
-})
+    return categoryMatch && statusMatch
+  })
 
-const updateStoreStatus = (
-  id,
-  status
-) => {
-  setStores((prev) =>
-    prev.map((store) =>
-      store.id === id
-        ? {
+  const updateStoreStatus = (
+    id,
+    status
+  ) => {
+    setStores((prev) =>
+      prev.map((store) =>
+        store.id === id
+          ? {
             ...store,
             status,
           }
-        : store
+          : store
+      )
     )
-  )
-}
+  }
 
   const deleteStore = (id) => {
 
@@ -551,12 +551,12 @@ const updateStoreStatus = (
 
                 <span className="tab-count">
                   {
-                      tab === 'すべて'
-                        ? stores.length
-                        : stores.filter(
-                            (store) =>
-                              store.status === tab
-                          ).length
+                    tab === 'すべて'
+                      ? stores.length
+                      : stores.filter(
+                        (store) =>
+                          store.status === tab
+                      ).length
                   }
                 </span>
 
@@ -766,7 +766,6 @@ const updateStoreStatus = (
 
               ) : (
 
-<<<<<<< HEAD
                 <div
                   style={{
                     display: 'flex',
@@ -789,41 +788,12 @@ const updateStoreStatus = (
                         setCurrentPage('地図')
                       }}
                       onDelete={deleteStore}
+                      onStatusChange={updateStoreStatus}
                       isSelected={selectedStoreIds.includes(store.id)}
                       onToggleSelect={toggleStoreSelection}
                     />
                   ))}
                 </div>
-=======
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '12px',
-                      marginTop: '16px',
-                    }}
-                  >
-                    {filteredStores.map((store) => (
-                      <StoreCard
-                        key={store.id}
-                        store={store}
-                        onSelect={(store) => {
-                          setSelectedPlace({
-                            lat: store.lat,
-                            lon: store.lng,
-                            name: store.name,
-                            display_name: store.name,
-                          })
-                          setCurrentPage('地図')
-                        }}
-                        onDelete={deleteStore}
-                        onStatusChange={updateStoreStatus}
-                        isSelected={selectedStoreIds.includes(store.id)}
-                        onToggleSelect={toggleStoreSelection}
-                      />
-                    ))}
-                  </div>
->>>>>>> origin/button
 
               )}
 
