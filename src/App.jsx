@@ -198,6 +198,7 @@ function InstagramEmbed({ url }) {
             Instagramの投稿を見る
           </a>
         </div>
+
       </blockquote>
     </div>
   )
@@ -221,6 +222,23 @@ function App() {
 
   const [currentPage, setCurrentPage] =
     useState('ホーム')
+
+
+  // ========================================
+  // AI旅行プラン用
+  // ========================================
+
+  const [showTravelPlan, setShowTravelPlan] =
+    useState(false)
+
+  const [travelPreferences, setTravelPreferences] =
+    useState('')
+
+  const [travelPlan, setTravelPlan] =
+    useState('')
+
+  const [selectedStoreIds, setSelectedStoreIds] =
+    useState([])
 
 
   // =========================
@@ -339,6 +357,164 @@ function App() {
     },
 
   ]
+
+
+  // ========================================
+  // AI旅行プラン生成
+  // ========================================
+
+  const generateTravelPlan = async () => {
+
+    console.log(
+      'AI旅行プランボタンが押されました'
+    )
+
+
+    // スポットが選択されているか確認
+    if (selectedStoreIds.length === 0) {
+
+      alert(
+        '旅行プランに使うスポットを選択してください！'
+      )
+
+      return
+    }
+
+
+    // 旅行の希望が入力されているか確認
+    if (!travelPreferences.trim()) {
+
+      alert(
+        '旅行の希望を入力してください！'
+      )
+
+      return
+    }
+
+
+    // 選択されたスポットだけ取り出す
+    const selectedStores =
+      stores.filter((store) =>
+        selectedStoreIds.includes(
+          store.id
+        )
+      )
+
+
+    console.log(
+      '選択されたスポット:',
+      selectedStores
+    )
+
+    console.log(
+      '旅行の希望:',
+      travelPreferences
+    )
+
+
+    try {
+
+      // ========================================
+      // バックエンドのAI APIへ送信
+      // ========================================
+
+      const response = await fetch(
+        'http://localhost:3001/api/travel-plan',
+        {
+          method: 'POST',
+
+          headers: {
+            'Content-Type':
+              'application/json',
+          },
+
+          body: JSON.stringify({
+
+            stores:
+              selectedStores,
+
+            preferences:
+              travelPreferences,
+
+          }),
+        }
+      )
+
+
+      console.log(
+        'AIサーバーからのレスポンス:',
+        response
+      )
+
+
+      const data =
+        await response.json()
+
+
+      // APIエラー
+      if (!response.ok) {
+
+        throw new Error(
+          data.error ||
+          'AI旅行プランの作成に失敗しました'
+        )
+      }
+
+
+      console.log(
+        'AIから返ってきたプラン:',
+        data.plan
+      )
+
+
+      // AIが生成した旅行プランを保存
+      setTravelPlan(
+        data.plan
+      )
+
+
+    } catch (error) {
+
+      console.error(
+        'AI旅行プランエラー:',
+        error
+      )
+
+
+      alert(
+        'AI旅行プランの作成に失敗しました。\n' +
+        error.message
+      )
+
+    }
+  }
+
+
+  // ========================================
+  // AI旅行プラン用
+  // 選択スポットのON/OFF
+  // ========================================
+
+  const toggleStoreSelection = (storeId) => {
+
+    setSelectedStoreIds((prev) => {
+
+      if (prev.includes(storeId)) {
+
+        return prev.filter(
+          (id) => id !== storeId
+        )
+
+      }
+
+      return [
+        ...prev,
+        storeId,
+      ]
+
+    })
+
+  }
 
 
   // =========================
@@ -685,9 +861,414 @@ function App() {
   }
 
 
-  // =========================
-  // 画面
-  // =========================
+  // ========================================
+  // AI旅行プラン画面
+  // ========================================
+
+  if (showTravelPlan) {
+
+    return (
+
+      <div className="app">
+
+        <header className="header">
+
+          <button
+            onClick={() => {
+
+              setShowTravelPlan(false)
+              setTravelPlan('')
+
+            }}
+            style={{
+              border: 'none',
+              background: 'none',
+              fontSize: '24px',
+              cursor: 'pointer',
+            }}
+          >
+            ←
+          </button>
+
+
+          <div className="logo">
+
+            <span className="logo-icon">
+              ✦
+            </span>
+
+            <span>
+              AI TRAVEL PLAN
+            </span>
+
+          </div>
+
+
+          <div
+            style={{
+              width: '32px',
+            }}
+          />
+
+        </header>
+
+
+        <main
+          className="main-content"
+          style={{
+            paddingBottom: '120px',
+          }}
+        >
+
+          {/* ========================================
+              説明
+          ======================================== */}
+
+          <section
+            style={{
+              marginBottom: '24px',
+            }}
+          >
+
+            <p className="small-text">
+              AI TRAVEL PLANNER
+            </p>
+
+            <h1>
+
+              行きたい場所から
+              <br />
+              旅行プランを作ろう
+
+            </h1>
+
+            <p
+              style={{
+                color: '#777',
+                lineHeight: 1.7,
+              }}
+            >
+              行きたいスポットを選んで、
+              <br />
+              どんな旅行にしたいか入力してください。
+            </p>
+
+          </section>
+
+
+          {/* ========================================
+              スポット選択
+          ======================================== */}
+
+          <section
+            style={{
+              marginBottom: '24px',
+            }}
+          >
+
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '12px',
+              }}
+            >
+
+              <div>
+
+                <p className="section-label">
+                  SELECT PLACES
+                </p>
+
+                <h2
+                  style={{
+                    margin: 0,
+                  }}
+                >
+                  行きたい場所
+                </h2>
+
+              </div>
+
+
+              <span
+                style={{
+                  fontSize: '13px',
+                  color: '#777',
+                }}
+              >
+                {selectedStoreIds.length}件選択
+              </span>
+
+            </div>
+
+
+            {stores.length === 0 ? (
+
+              <div
+                style={{
+                  padding: '24px',
+                  background: '#fff',
+                  borderRadius: '12px',
+                  border: '1px solid #eee',
+                  textAlign: 'center',
+                }}
+              >
+
+                <p>
+                  まだ登録されたスポットがありません。
+                </p>
+
+                <button
+                  onClick={() => {
+
+                    setShowTravelPlan(false)
+                    setShowAddForm(true)
+
+                  }}
+                  style={{
+                    padding: '10px 16px',
+                    border: 'none',
+                    borderRadius: '8px',
+                    background: '#111',
+                    color: '#fff',
+                    cursor: 'pointer',
+                  }}
+                >
+                  スポットを登録する
+                </button>
+
+              </div>
+
+            ) : (
+
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px',
+                }}
+              >
+
+                {stores.map((store) => {
+
+                  const isSelected =
+                    selectedStoreIds.includes(
+                      store.id
+                    )
+
+
+                  return (
+
+                    <button
+                      key={store.id}
+                      onClick={() =>
+                        toggleStoreSelection(
+                          store.id
+                        )
+                      }
+                      style={{
+                        width: '100%',
+                        padding: '14px',
+                        borderRadius: '12px',
+                        border: isSelected
+                          ? '2px solid #111'
+                          : '1px solid #eee',
+                        background: '#fff',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                      }}
+                    >
+
+                      <span
+                        style={{
+                          width: '22px',
+                          height: '22px',
+                          borderRadius: '6px',
+                          border: '1px solid #ccc',
+                          background: isSelected
+                            ? '#111'
+                            : '#fff',
+                          color: '#fff',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                        }}
+                      >
+                        {isSelected
+                          ? '✓'
+                          : ''}
+                      </span>
+
+
+                      <span
+                        style={{
+                          flex: 1,
+                        }}
+                      >
+
+                        <strong
+                          style={{
+                            display: 'block',
+                            marginBottom: '4px',
+                          }}
+                        >
+                          {store.name}
+                        </strong>
+
+
+                        <small
+                          style={{
+                            color: '#777',
+                          }}
+                        >
+                          {store.category}
+                        </small>
+
+                      </span>
+
+                    </button>
+
+                  )
+
+                })}
+
+              </div>
+
+            )}
+
+          </section>
+
+
+          {/* ========================================
+              旅行の希望
+          ======================================== */}
+
+          <section
+            style={{
+              marginBottom: '24px',
+            }}
+          >
+
+            <p className="section-label">
+              TRAVEL PREFERENCES
+            </p>
+
+            <h2>
+              どんな旅行にしたい？
+            </h2>
+
+
+            <textarea
+              value={travelPreferences}
+              onChange={(event) =>
+                setTravelPreferences(
+                  event.target.value
+                )
+              }
+              placeholder={
+                '例：\n' +
+                '・土曜日に行きたい\n' +
+                '・カフェを多めにしたい\n' +
+                '・歩きすぎないプランがいい\n' +
+                '・午前10時くらいからスタートしたい'
+              }
+              style={{
+                width: '100%',
+                minHeight: '150px',
+                padding: '14px',
+                boxSizing: 'border-box',
+                borderRadius: '12px',
+                border: '1px solid #ddd',
+                resize: 'vertical',
+                fontSize: '14px',
+                lineHeight: 1.7,
+              }}
+            />
+
+          </section>
+
+
+          {/* ========================================
+              AI生成ボタン
+          ======================================== */}
+
+          <button
+            onClick={generateTravelPlan}
+            style={{
+              width: '100%',
+              padding: '16px',
+              border: 'none',
+              borderRadius: '12px',
+              background: '#111',
+              color: '#fff',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              marginBottom: '24px',
+            }}
+          >
+            ✦ AIで旅行プランを作成
+          </button>
+
+
+          {/* ========================================
+              AI結果
+          ======================================== */}
+
+          {travelPlan && (
+
+            <section
+              style={{
+                background: '#fff',
+                borderRadius: '16px',
+                padding: '20px',
+                border: '1px solid #eee',
+                boxShadow:
+                  '0 4px 20px rgba(0,0,0,0.06)',
+              }}
+            >
+
+              <p className="section-label">
+                AI RESULT
+              </p>
+
+              <h2>
+                あなたの旅行プラン
+              </h2>
+
+
+              <div
+                style={{
+                  marginTop: '16px',
+                  lineHeight: 1.8,
+                  whiteSpace: 'pre-wrap',
+                  color: '#333',
+                }}
+              >
+                {travelPlan}
+              </div>
+
+            </section>
+
+          )}
+
+        </main>
+
+      </div>
+
+    )
+  }
+
+
+  // ========================================
+  // 通常画面
+  // ========================================
 
   return (
 
@@ -1072,8 +1653,8 @@ function App() {
             <button
               key={tab}
               className={`tab-button ${activeTab === tab
-                ? 'active'
-                : ''
+                  ? 'active'
+                  : ''
                 }`}
               onClick={() =>
                 setActiveTab(tab)
@@ -1112,9 +1693,9 @@ function App() {
                 <button
                   key={category.name}
                   className={`category-chip ${activeCategory ===
-                    category.name
-                    ? 'active'
-                    : ''
+                      category.name
+                      ? 'active'
+                      : ''
                     }`}
                   onClick={() =>
                     setActiveCategory(
@@ -1627,9 +2208,21 @@ function App() {
         </button>
 
 
-        {/* 共有 */}
+        {/* ========================================
+            共有 / AI旅行プラン
+        ======================================== */}
 
-        <button className="nav-item">
+        <button
+          className="nav-item"
+          onClick={() => {
+
+            setTravelPlan('')
+            setSelectedStoreIds([])
+            setTravelPreferences('')
+            setShowTravelPlan(true)
+
+          }}
+        >
 
           <span>
             ♧
@@ -1661,6 +2254,5 @@ function App() {
     </div>
   )
 }
-
 
 export default App
