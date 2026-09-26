@@ -598,7 +598,7 @@ const handleSearch = async () => {
           </div>
 
           <p className="weekend-area">
-            MY PLACESから行きたいスポットを選んで、
+            保存したスポットから行きたいスポットを選んで、
             旅行の希望を入力してください。
           </p>
 

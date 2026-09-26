@@ -53,10 +53,16 @@ function StoreCard({
       </p>
 
       <a
+        className="instagram-link"
         href={store.url}
         target="_blank"
         rel="noopener noreferrer"
       >
+          <img
+          src="/Instagram_Glyph_Gradient.svg"
+          alt=""
+          className="instagram-icon"
+        />
         Instagramを見る
       </a>
 
