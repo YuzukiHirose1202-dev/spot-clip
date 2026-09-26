@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './App.css'
 import MapView from './components/MapView'
 import StoreCard from './components/StoreCard'
@@ -303,9 +303,9 @@ function App() {
       <header className="header">
 
         <div className="logo">
-        <span className="logo-icon">
-          <img src="/logo.png" alt="SNS PLACE" />
-        </span>
+          <span className="logo-icon">
+            <img src="/logo.png" alt="SNS PLACE" />
+          </span>
 
           <span>
             SNS PLACE
