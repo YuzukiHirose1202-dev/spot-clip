@@ -6,6 +6,7 @@ function StoreCard({
   onDelete,
   isSelected,
   onToggleSelect,
+  onStatusChange,
 }) {
   return (
     <div
@@ -18,6 +19,7 @@ function StoreCard({
         cursor: 'pointer',
       }}
     >
+      {/* AI旅行プランに追加 */}
       <label
         onClick={(event) => {
           event.stopPropagation()
@@ -35,8 +37,11 @@ function StoreCard({
           checked={isSelected}
           onChange={() => onToggleSelect(store.id)}
         />
+
         AI旅行プランに追加
       </label>
+
+      {/* 店舗名 */}
       <h3
         style={{
           margin: '0 0 8px 0',
@@ -45,6 +50,7 @@ function StoreCard({
         {store.name}
       </h3>
 
+      {/* カテゴリー */}
       <p
         style={{
           color: '#666',
@@ -54,10 +60,121 @@ function StoreCard({
         {store.category}
       </p>
 
+      {/* Instagram埋め込み */}
       <InstagramEmbed
         url={store.url}
       />
 
+      {/* 現在のステータス */}
+      {store.status && (
+        <p
+          style={{
+            fontSize: '12px',
+            fontWeight: 'bold',
+            color:
+              store.status === '行った'
+                ? '#4CAF50'
+                : '#e88190',
+          }}
+        >
+          {store.status}
+        </p>
+      )}
+
+      {/* ステータス変更 */}
+      <div
+        style={{
+          display: 'flex',
+          gap: '8px',
+          marginTop: '10px',
+        }}
+      >
+        <button
+          onClick={(event) => {
+            event.stopPropagation()
+
+            if (onStatusChange) {
+              onStatusChange(
+                store.id,
+                '行きたい'
+              )
+            }
+          }}
+          style={{
+            padding: '8px 12px',
+            borderRadius: '8px',
+            border: 'none',
+            cursor: 'pointer',
+            background:
+              store.status === '行きたい'
+                ? '#e88190'
+                : '#f3f3f3',
+            color:
+              store.status === '行きたい'
+                ? '#fff'
+                : '#666',
+            fontWeight:
+              store.status === '行きたい'
+                ? 'bold'
+                : 'normal',
+          }}
+        >
+          行きたい
+        </button>
+
+        <button
+          onClick={(event) => {
+            event.stopPropagation()
+
+            if (onStatusChange) {
+              onStatusChange(
+                store.id,
+                '行った'
+              )
+            }
+          }}
+          style={{
+            padding: '8px 12px',
+            borderRadius: '8px',
+            border: 'none',
+            cursor: 'pointer',
+            background:
+              store.status === '行った'
+                ? '#7dc7a6'
+                : '#f3f3f3',
+            color:
+              store.status === '行った'
+                ? '#fff'
+                : '#666',
+            fontWeight:
+              store.status === '行った'
+                ? 'bold'
+                : 'normal',
+          }}
+        >
+          行った
+        </button>
+      </div>
+
+      {/* Instagramを開く */}
+      {store.url && (
+        <a
+          href={store.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(event) => {
+            event.stopPropagation()
+          }}
+          style={{
+            display: 'block',
+            marginTop: '10px',
+          }}
+        >
+          Instagramを見る
+        </a>
+      )}
+
+      {/* 削除 */}
       <button
         onClick={(event) => {
           event.stopPropagation()
