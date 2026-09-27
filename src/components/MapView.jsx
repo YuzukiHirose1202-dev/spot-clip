@@ -92,7 +92,11 @@ function MapView({
           </Marker>
         )}
 
-        {filteredStores.map((store) => (
+            {filteredStores.filter((store) =>
+                  store.lat != null &&
+                  store.lng != null
+              )
+              .map((store) => (
           <Marker
             key={store.id}
             position={[
