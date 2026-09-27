@@ -1,16 +1,60 @@
-# React + Vite
+# spot-clip
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 概要
 
-Currently, two official plugins are available:
+SNSなどで見つけた気になるお店を、地図上に保存・管理できるWebアプリです。
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+「Instagramなどで見つけたお店を、あとで行きたいと思っても保存したまま忘れてしまう」という課題に着目し、気になったお店を簡単に記録して、地図から確認できるようにしました。
 
-## React Compiler
+## 主な機能
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+* お店の情報を登録
+* お店の位置を地図上に表示
+* 保存したお店の一覧・詳細を確認
+* SNSの投稿情報をもとにお店を保存
+* 保存したお店を地図から探す
 
-## Expanding the ESLint configuration
+## 使用技術
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+* React
+* JavaScript
+* Vite
+* Node.js
+* [実際に使用している地図API・AI APIなどを記載]
+
+## 起動方法
+
+### 1. リポジトリをクローン
+
+```bash
+git clone [リポジトリURL]
+cd spot-clip
+```
+
+### 2. パッケージをインストール
+
+```bash
+npm install
+```
+
+### 3. 環境変数を設定
+
+プロジェクトのルートディレクトリに `.env` ファイルを作成し、必要なAPIキーなどを設定してください。
+
+```env
+[実際に使用している環境変数を記載]
+```
+
+### 4. 開発サーバーを起動
+
+```bash
+npm run dev
+```
+
+表示されたURLにブラウザからアクセスしてください。
+
+## 注意事項
+
+本アプリはハッカソンで制作したプロトタイプです。
+一部の機能では外部APIを使用しています。利用する際は、必要なAPIキーを各自で設定してください。
+
