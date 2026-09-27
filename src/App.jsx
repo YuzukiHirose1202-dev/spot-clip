@@ -21,6 +21,8 @@ function App() {
   const [name, setName] = useState('')
   const [url, setUrl] = useState('')
   const [showAddForm, setShowAddForm] = useState(false)
+  const [isAnalyzingInstagram, setIsAnalyzingInstagram] = useState(false)
+  const [address, setAddress] = useState('')
 
   // 検索結果から選択した場所
   const [selectedPlace, setSelectedPlace] = useState(null)
@@ -130,6 +132,48 @@ const handleSearch = async () => {
     setSearchResults([])
   }
 
+  const analyzeInstagram = async () => {
+  if (!url.trim()) {
+    alert('Instagram URLを入力してください')
+    return
+  }
+
+  setIsAnalyzingInstagram(true)
+
+  try {
+    const response = await fetch(
+      'http://localhost:3001/api/instagram/analyze',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          url: url.trim(),
+        }),
+      }
+    )
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(
+        data.error || 'Instagram情報の取得に失敗しました'
+      )
+    }
+
+    console.log('Instagram解析結果:', data)
+
+    setName(data.name || '')
+    setAddress(data.address || '')
+
+  } catch (error) {
+    console.error(error)
+    alert('Instagram情報の取得に失敗しました')
+  } finally {
+    setIsAnalyzingInstagram(false)
+  }
+}
 
   // =========================
   // お店を登録
@@ -137,6 +181,10 @@ const handleSearch = async () => {
 
   const addStore = async () => {
 
+    console.log('登録時の情報:', {
+      name,
+      address,
+    })
     if (!name.trim()) {
       alert('店名を入力してください')
       return
@@ -150,29 +198,21 @@ const handleSearch = async () => {
 
     try {
 
-      let lat
-      let lng
+        let lat = null
+        let lng = null
 
+        if (selectedPlace) {
+          lat = Number(selectedPlace.lat)
+          lng = Number(selectedPlace.lon)
+        } else {
+          const place = await findPlace(name, address)
+          console.log('Nominatim検索結果:', place)
 
-      // 検索結果から選択した場合
-      if (selectedPlace) {
-
-        lat = Number(selectedPlace.lat)
-        lng = Number(selectedPlace.lon)
-
-      } else {
-
-        // 検索結果を使わず直接入力した場合
-        const place = await findPlace(name)
-
-        if (!place) {
-          alert('店舗の場所が見つかりませんでした')
-          return
+          if (place) {
+            lat = Number(place.lat)
+            lng = Number(place.lon)
+          }
         }
-
-        lat = Number(place.lat)
-        lng = Number(place.lon)
-      }
 
 
       // 新しい店舗データ
@@ -418,6 +458,26 @@ const handleSearch = async () => {
                 border: '1px solid #ddd',
               }}
             />
+
+            <button
+              onClick={analyzeInstagram}
+              disabled={isAnalyzingInstagram}
+              style={{
+                width: '100%',
+                padding: '12px',
+                marginBottom: '10px',
+                border: 'none',
+                borderRadius: '8px',
+                background: '#f3d5da',
+                color: '#3a2121',
+                cursor: isAnalyzingInstagram ? 'default' : 'pointer',
+              }}
+            >
+              {isAnalyzingInstagram
+                ? 'Instagramを解析中...'
+                : 'Instagramから情報を取得'}
+            </button>
+
             <select
               value={selectedCategory}
               onChange={(e) =>

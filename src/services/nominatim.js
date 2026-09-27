@@ -93,22 +93,51 @@ export const searchPlaces = async (query) => {
 }
 
 
-export const findPlace = async (name) => {
-  const response = await fetch(
-    `${NOMINATIM_URL}?format=jsonv2&q=${encodeURIComponent(
-      name
-    )}&accept-language=ja&countrycodes=jp&layer=poi&limit=1`
+export const findPlace = async (name, address = '') => {
+  const normalizedAddress = address
+    .replace(/[０-９]/g, (char) =>
+      String.fromCharCode(char.charCodeAt(0) - 0xfee0)
+    )
+    .replace(/−/g, '-')
+
+  const match = normalizedAddress.match(
+    /^(.+?[都道府県])(.+?[市区町村])(.+)$/
   )
 
-  if (!response.ok) {
-    throw new Error('場所の検索に失敗しました')
+  if (match) {
+    const [, state, city, street] = match
+
+    const params = new URLSearchParams({
+      format: 'jsonv2',
+      street,
+      city,
+      state,
+      country: 'Japan',
+      countrycodes: 'jp',
+      limit: '1',
+    })
+
+    const response = await fetch(
+      `${NOMINATIM_URL}?${params.toString()}`
+    )
+
+    if (!response.ok) {
+      throw new Error('場所の検索に失敗しました')
+    }
+
+    const data = await response.json()
+
+    console.log('Nominatim構造化検索:', {
+      state,
+      city,
+      street,
+      data,
+    })
+
+    if (data.length > 0) {
+      return data[0]
+    }
   }
 
-  const data = await response.json()
-
-  if (data.length === 0) {
-    return null
-  }
-
-  return data[0]
+  return null
 }
