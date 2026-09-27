@@ -1,0 +1,708 @@
+/* =========================
+   Share Page
+========================= */
+
+.share-page {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px 130px;
+    box-sizing: border-box;
+}
+
+/* =========================
+   Header
+========================= */
+
+.share-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.share-page-label {
+    margin: 0 0 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #aa526e;
+}
+
+.share-page-header h1 {
+    margin: 0;
+    font-size: 30px;
+    color: #302d38;
+}
+
+.share-header-button {
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 50%;
+    background: #f8dce5;
+    color: #a84f6b;
+    font-size: 25px;
+}
+
+/* =========================
+   Groups
+========================= */
+
+.share-groups-section {
+    margin-bottom: 18px;
+}
+
+.share-groups-scroll {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 4px 0 10px;
+    scrollbar-width: none;
+}
+
+.share-groups-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.share-group-card {
+    flex: 0 0 280px;
+    min-height: 145px;
+    padding: 16px;
+    box-sizing: border-box;
+
+    border-radius: 22px;
+    background: #f4f3fb;
+
+    box-shadow: 0 5px 18px rgba(45, 38, 65, 0.05);
+}
+
+.share-group-card.active {
+    background: linear-gradient(135deg,
+            #fff7f8,
+            #ffffff);
+
+    box-shadow:
+        0 8px 22px rgba(48, 38, 60, 0.08);
+}
+
+.share-group-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.share-group-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border-radius: 999px;
+
+    background: #e8e7f1;
+    color: #605c6c;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.share-group-tag.active {
+    background: #eb718d;
+    color: white;
+}
+
+.share-group-check {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #a43e5d;
+    color: white;
+    font-size: 15px;
+}
+
+.share-group-icon {
+    display: none;
+}
+
+.share-group-name {
+    margin: 14px 0 10px;
+
+    font-size: 21px;
+    line-height: 1.3;
+
+    color: #302d38;
+}
+
+.share-group-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    color: #625d68;
+    font-size: 13px;
+}
+
+.share-meta-dot {
+    color: #bdb7c0;
+}
+
+/* =========================
+   Active Group
+========================= */
+
+.active-group-card {
+    margin-top: 8px;
+    padding: 24px;
+
+    background: white;
+    border-radius: 28px;
+
+    box-shadow:
+        0 8px 25px rgba(48, 38, 60, 0.07);
+}
+
+.active-group-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.active-group-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-bottom: 10px;
+
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    color: #5e5965;
+}
+
+.active-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #6243af;
+}
+
+.active-group-header h2 {
+    margin: 0 0 8px;
+
+    font-size: 28px;
+    line-height: 1.25;
+
+    color: #292631;
+}
+
+.active-group-header p {
+    margin: 0;
+
+    color: #756e78;
+    font-size: 15px;
+}
+
+.group-menu-button {
+    width: 50px;
+    height: 50px;
+
+    flex-shrink: 0;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #f1f1f7;
+    color: #5d5863;
+
+    font-size: 28px;
+}
+
+/* =========================
+   Group bottom
+========================= */
+
+.active-group-bottom {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin-top: 26px;
+}
+
+.member-avatars {
+    display: flex;
+    margin-right: auto;
+}
+
+.member-avatar {
+    width: 48px;
+    height: 48px;
+
+    margin-left: -8px;
+
+    border: 3px solid white;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #f0e7df;
+
+    font-size: 22px;
+}
+
+.member-avatar:first-child {
+    margin-left: 0;
+}
+
+.invite-button,
+.link-share-button {
+    padding: 12px 17px;
+
+    border: none;
+    border-radius: 999px;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.invite-button {
+    background: #e8e9f7;
+    color: #5e668f;
+}
+
+.link-share-button {
+    background: #f0edff;
+    color: #634f9a;
+}
+
+/* =========================
+   Tabs
+========================= */
+
+.shared-tabs {
+    display: flex;
+    gap: 8px;
+
+    margin-top: 24px;
+    overflow-x: auto;
+
+    scrollbar-width: none;
+}
+
+.shared-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.shared-tab {
+    flex-shrink: 0;
+
+    padding: 13px 20px;
+
+    border: none;
+    border-radius: 999px;
+
+    background: white;
+    color: #55505a;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    box-shadow: 0 3px 10px rgba(45, 38, 65, 0.04);
+}
+
+.shared-tab.active {
+    background: #e56f8c;
+    color: white;
+}
+
+/* =========================
+   Spots
+========================= */
+
+.shared-spots-section {
+    margin-top: 24px;
+}
+
+.shared-spots-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    margin-bottom: 12px;
+}
+
+.shared-spots-header h2 {
+    margin: 0;
+
+    font-size: 20px;
+    color: #302d38;
+}
+
+.shared-spots-header>span {
+    flex-shrink: 0;
+
+    font-size: 12px;
+    color: #706975;
+}
+
+/* =========================
+   Spot card
+========================= */
+
+.shared-spot-card {
+    padding: 18px;
+
+    background: white;
+    border-radius: 26px;
+
+    box-shadow:
+        0 8px 24px rgba(48, 38, 60, 0.07);
+}
+
+.shared-spot-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.shared-user-avatar {
+    width: 44px;
+    height: 44px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #eadfd6;
+
+    font-size: 20px;
+}
+
+.shared-spot-user>div:nth-child(2) {
+    min-width: 0;
+}
+
+.shared-spot-user strong {
+    margin-right: 7px;
+    color: #302d38;
+    font-size: 14px;
+}
+
+.shared-spot-user span {
+    color: #77717a;
+    font-size: 12px;
+}
+
+.shared-spot-user p {
+    margin: 4px 0 0;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    color: #625d67;
+    font-size: 13px;
+}
+
+.bookmark-button {
+    margin-left: auto;
+
+    width: 44px;
+    height: 44px;
+
+    flex-shrink: 0;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #f4f2f8;
+
+    font-size: 22px;
+    color: #5e5862;
+}
+
+/* =========================
+   Fake image
+========================= */
+
+.shared-spot-image {
+    margin-top: 14px;
+}
+
+.fake-cafe-image {
+    min-height: 230px;
+
+    border-radius: 22px;
+
+    display: flex;
+    align-items: flex-start;
+
+    padding: 16px;
+
+    box-sizing: border-box;
+
+    background:
+        linear-gradient(135deg,
+            #b9d7b0,
+            #e9d9bd 48%,
+            #c69f7c);
+
+    position: relative;
+    overflow: hidden;
+}
+
+.fake-cafe-image::after {
+    content: '';
+    position: absolute;
+
+    width: 190px;
+    height: 190px;
+
+    right: -30px;
+    bottom: -50px;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.65);
+}
+
+.fake-cafe-image span,
+.fake-cafe-image strong {
+    position: relative;
+    z-index: 1;
+}
+
+.fake-cafe-image span {
+    padding: 8px 12px;
+
+    background: rgba(255, 255, 255, 0.92);
+
+    border-radius: 999px;
+
+    color: #504852;
+}
+
+.fake-cafe-image strong {
+    margin-left: 8px;
+
+    padding: 9px 12px;
+
+    background: rgba(255, 255, 255, 0.92);
+
+    border-radius: 999px;
+
+    color: #504852;
+
+    font-size: 12px;
+}
+
+/* =========================
+   Spot content
+========================= */
+
+.shared-spot-content {
+    position: relative;
+
+    padding-top: 16px;
+    padding-right: 130px;
+}
+
+.shared-spot-content h3 {
+    margin: 0 0 5px;
+
+    font-size: 23px;
+    color: #292631;
+}
+
+.shared-spot-content p {
+    margin: 0;
+
+    color: #77717a;
+    font-size: 14px;
+}
+
+.want-button {
+    position: absolute;
+
+    right: 0;
+    top: 16px;
+
+    padding: 12px 17px;
+
+    border: none;
+    border-radius: 999px;
+
+    background: #ffe4e9;
+    color: #943c59;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* =========================
+   Bottom actions
+========================= */
+
+.share-actions {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 14px;
+
+    margin-top: 28px;
+}
+
+.map-summary-button,
+.add-spot-button {
+    min-height: 66px;
+
+    border: none;
+    border-radius: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.map-summary-button {
+    position: relative;
+
+    background: #292c39;
+    color: white;
+
+    box-shadow:
+        0 12px 25px rgba(39, 41, 54, 0.18);
+}
+
+.map-summary-button span {
+    color: #ffcbd7;
+    font-size: 22px;
+}
+
+.map-summary-button i {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+    background: #e56f8c;
+}
+
+.add-spot-button {
+    background: #a63d5b;
+    color: white;
+
+    box-shadow:
+        0 12px 25px rgba(166, 61, 91, 0.18);
+}
+
+.add-spot-button span {
+    font-size: 20px;
+}
+
+/* =========================
+   Mobile
+========================= */
+
+@media (max-width: 600px) {
+
+    .share-page {
+        padding: 0 16px 120px;
+    }
+
+    .share-page-header {
+        margin-bottom: 12px;
+    }
+
+    .share-page-header h1 {
+        font-size: 26px;
+    }
+
+    .share-group-card {
+        flex-basis: 280px;
+    }
+
+    .active-group-card {
+        padding: 20px;
+        border-radius: 24px;
+    }
+
+    .active-group-header h2 {
+        font-size: 25px;
+    }
+
+    .active-group-header p {
+        font-size: 14px;
+
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .active-group-bottom {
+        flex-wrap: wrap;
+    }
+
+    .member-avatars {
+        width: 100%;
+    }
+
+    .invite-button,
+    .link-share-button {
+        flex: 1;
+    }
+
+    .shared-spots-header {
+        align-items: flex-end;
+    }
+
+    .shared-spots-header h2 {
+        font-size: 18px;
+    }
+
+    .shared-spot-card {
+        padding: 14px;
+        border-radius: 22px;
+    }
+
+    .fake-cafe-image {
+        min-height: 205px;
+    }
+
+    .shared-spot-content {
+        padding-right: 0;
+        padding-bottom: 55px;
+    }
+
+    .want-button {
+        left: 0;
+        right: auto;
+        top: auto;
+        bottom: 0;
+    }
+
+    .share-actions {
+        grid-template-columns: 1.25fr 1fr;
+        gap: 9px;
+    }
+
+    .map-summary-button,
+    .add-spot-button {
+        min-height: 58px;
+        padding: 0 10px;
+        font-size: 13px;
+    }
+}
