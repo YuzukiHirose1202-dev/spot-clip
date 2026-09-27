@@ -87,6 +87,19 @@ function StoreCard({
       <InstagramEmbed
         url={store.url}
       />
+      <a
+        className="instagram-link"
+        href={store.url}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+          <img
+          src="/Instagram_Glyph_Gradient.svg"
+          alt=""
+          className="instagram-icon"
+        />
+        Instagramを見る
+      </a>
 
       {/* 現在のステータス */}
       {store.status && (
