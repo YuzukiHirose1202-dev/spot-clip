@@ -360,8 +360,6 @@ const updateStoreStatus = (
             </h1>
 
           </div>
-          
-          {/* ボタン削除 */}
 
         </section>
 
