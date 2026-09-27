@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
+import MyPage from './components/MyPage'
+import { useState, useEffect } from 'react'
 import './App.css'
 import MapView from './components/MapView'
 import StoreCard from './components/StoreCard'
@@ -809,6 +810,10 @@ const updateStoreStatus = (
             />
           )}
 
+          {currentPage === 'マイページ' && (
+            <MyPage stores={stores} />
+          )}
+
 
         </section>
 
@@ -883,18 +888,19 @@ const updateStoreStatus = (
         </button>
 
 
-        <button className="nav-item">
-
-          <span>
-            ♡
-          </span>
-
-          <small>
-            マイページ
-          </small>
-
+        <button
+          className={
+            currentPage === 'マイページ'
+              ? 'nav-item active'
+              : 'nav-item'
+          }
+          onClick={() =>
+            setCurrentPage('マイページ')
+          }
+        >
+          <span>♡</span>
+          <small>マイページ</small>
         </button>
-
       </nav>
 
     </div>
