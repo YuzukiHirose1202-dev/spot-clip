@@ -19,14 +19,6 @@ function SearchBox({
 
         <div className="search-box">
 
-          <button
-            className="search-icon"
-            onClick={onSearch}
-            aria-label="検索"
-          >
-            ⌕
-          </button>
-
           <input
             type="text"
             placeholder="エリアや店名、タグで検索..."
@@ -39,9 +31,15 @@ function SearchBox({
 
         </div>
 
-        <button className="filter-button">
-          ☰
+        <button
+            className="filter-button"
+            onClick={onSearch}
+          >
+            <span className="search-icon-center">
+              ⌕
+            </span>
         </button>
+        
 
       </section>
 

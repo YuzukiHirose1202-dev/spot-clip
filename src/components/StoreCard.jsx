@@ -44,7 +44,6 @@ function StoreCard({
   {store.category}
 </p>
 
-<<<<<<< HEAD
 <p
   style={{
     fontSize: '12px',
@@ -65,11 +64,9 @@ function StoreCard({
 >
   Instagramを見る
 </a>
-=======
       <InstagramEmbed
         url={store.url}
       />
->>>>>>> origin/tagawa4
 
       <button
         onClick={(event) => {

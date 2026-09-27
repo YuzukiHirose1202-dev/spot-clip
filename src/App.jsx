@@ -360,9 +360,8 @@ const updateStoreStatus = (
             </h1>
 
           </div>
-          <button className="notification-button">
-            🔔
-          </button>
+          
+          {/* ボタン削除 */}
 
         </section>
 
@@ -766,7 +765,6 @@ const updateStoreStatus = (
 
               ) : (
 
-<<<<<<< HEAD
                   <div
                     style={{
                       display: 'flex',
@@ -795,35 +793,7 @@ const updateStoreStatus = (
                       />
                     ))}
                   </div>
-=======
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '12px',
-                    marginTop: '16px',
-                  }}
-                >
-                  {filteredStores.map((store) => (
-                    <StoreCard
-                      key={store.id}
-                      store={store}
-                      onSelect={(store) => {
-                        setSelectedPlace({
-                          lat: store.lat,
-                          lon: store.lng,
-                          name: store.name,
-                          display_name: store.name,
-                        })
-                        setCurrentPage('地図')
-                      }}
-                      onDelete={deleteStore}
-                      isSelected={selectedStoreIds.includes(store.id)}
-                      onToggleSelect={toggleStoreSelection}
-                    />
-                  ))}
-                </div>
->>>>>>> origin/tagawa4
+                
 
               )}
 
