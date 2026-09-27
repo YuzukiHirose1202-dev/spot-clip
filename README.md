@@ -30,7 +30,7 @@ SNSなどで見つけた気になるお店を、地図上に保存・管理で�
 ### 1. リポジトリをクローン
 
 ```bash
-git clone [リポジトリURL]
+git clone https://github.com/YuzukiHirose1202-dev/spot-clip.git
 cd spot-clip
 ```
 
